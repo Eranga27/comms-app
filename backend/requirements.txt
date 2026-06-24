@@ -8,6 +8,6 @@ asyncpg==0.29.0
 python-multipart==0.0.9
 redis==5.0.7
 python-dotenv==1.0.1
-opencv-python==4.13.0.92
+opencv-python-headless==4.10.0.84
 faster-whisper==1.2.1
 alembic==1.13.2
