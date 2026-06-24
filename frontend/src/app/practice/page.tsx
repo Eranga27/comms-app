@@ -447,8 +447,9 @@ export default function PracticeSession() {
     }
     
     if (mediaRecorderRef.current && mediaRecorderRef.current.state !== "inactive") {
-        mediaRecorderRef.current.onstop = async () => {
-            const audioBlob = new Blob(audioChunksRef.current, { type: mediaRecorderRef.current.mimeType || 'video/webm' });
+        const currentRecorder = mediaRecorderRef.current;
+        currentRecorder.onstop = async () => {
+            const audioBlob = new Blob(audioChunksRef.current, { type: currentRecorder.mimeType || 'video/webm' });
             
             // Upload to V2.0 Batch Processing Endpoint
             if (sessionIdRef.current) {
@@ -471,7 +472,7 @@ export default function PracticeSession() {
                 }, 1000);
             }
         };
-        mediaRecorderRef.current.stop();
+        currentRecorder.stop();
     } else {
         // Fallback if mediaRecorder failed
         if (sessionIdRef.current) {
