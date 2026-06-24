@@ -280,7 +280,8 @@ export default function PracticeSession() {
     
     const sessionId = Math.random().toString(36).substring(7);
     sessionIdRef.current = sessionId;
-    const ws = new WebSocket(`ws://localhost:8000/api/ws/session/${sessionId}`);
+    const wsUrl = process.env.NEXT_PUBLIC_WS_URL || "ws://localhost:8000/api/ws";
+    const ws = new WebSocket(`${wsUrl}/session/${sessionId}`);
     wsRef.current = ws;
 
     ws.onopen = async () => {
@@ -455,7 +456,8 @@ export default function PracticeSession() {
                 formData.append("file", audioBlob, "session.webm");
                 
                 try {
-                    await fetch(`http://localhost:8000/api/session/${sessionIdRef.current}/audio`, {
+                    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api";
+                    await fetch(`${apiUrl}/session/${sessionIdRef.current}/audio`, {
                         method: "POST",
                         body: formData
                     });

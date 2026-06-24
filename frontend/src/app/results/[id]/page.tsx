@@ -10,7 +10,8 @@ export default async function ResultsPage({ params }: { params: Promise<{ id: st
   // For MVP, using localhost directly from server-side fetch.
   // Wait, Next.js server components fetch at build/request time on server.
   try {
-    const res = await fetch(`http://localhost:8000/api/session/${id}`, { cache: 'no-store' });
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api";
+    const res = await fetch(`${apiUrl}/session/${id}`, { cache: 'no-store' });
     if (!res.ok) {
       if (res.status === 404) return notFound();
       throw new Error("Failed to fetch session");

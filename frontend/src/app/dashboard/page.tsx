@@ -18,7 +18,8 @@ export default function DashboardPage() {
   const fetchSessions = async () => {
     try {
       setError(null);
-      const res = await fetch("http://localhost:8000/api/sessions", { cache: "no-store" });
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api";
+      const res = await fetch(`${apiUrl}/sessions`, { cache: "no-store" });
       if (res.ok) {
           const data = await res.json();
           setSessions(data);
@@ -62,7 +63,8 @@ export default function DashboardPage() {
       if (!confirm("Are you sure you want to delete this session? This action cannot be undone.")) return;
       
       try {
-          const res = await fetch(`http://localhost:8000/api/session/${id}`, {
+          const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api";
+          const res = await fetch(`${apiUrl}/session/${id}`, {
               method: 'DELETE'
           });
           if (res.ok) {
