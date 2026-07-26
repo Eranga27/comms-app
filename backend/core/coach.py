@@ -1,10 +1,10 @@
 import os
 import json
 
-async def generate_coaching_report(transcript: str, duration: int, caf_report: dict, timeline_events: list):
+async def generate_coaching_report(transcript: str, duration: int, caf_report: dict, timeline_events: list, practice_context: str = "Custom Practice"):
     """
     CAF Phase 3: Local Offline Intelligence Layer
-    Reads the strict mathematical CAF scores and timeline events to generate Evidence-Based Coaching dynamically.
+    Reads the strict mathematical CAF scores and timeline events to generate Evidence-Based Coaching dynamically, now context-aware based on the user's practice_context.
     """
     try:
         strengths = []
@@ -15,22 +15,56 @@ async def generate_coaching_report(transcript: str, duration: int, caf_report: d
         word_count = len(transcript.split()) if transcript else 0
         content_score = 5 # Base
         
-        # Structure and length
-        if word_count > 40: content_score += 10
-        elif word_count > 20: content_score += 5
-        
-        transcript_lower = transcript.lower()
-        
-        # Persuasion markers
-        persuasive_words = ["because", "example", "reason", "therefore", "significant", "impact", "result"]
-        found_persuasive = sum(1 for w in persuasive_words if w in transcript_lower)
-        content_score += min(8, found_persuasive * 2)
-        
-        # Storytelling / Sequencing markers
-        sequence_words = ["first", "second", "then", "finally", "next", "in conclusion", "start by"]
-        found_seq = sum(1 for w in sequence_words if w in transcript_lower)
-        content_score += min(7, found_seq * 2)
-        
+        # Adjust based on Practice Context
+        if practice_context == "Job Interview":
+            # Prioritize concise, relevant answers
+            if 20 < word_count < 100: content_score += 15
+            elif word_count >= 100: content_score += 5
+            
+            # Confidence/Relevance markers
+            interview_words = ["experience", "achieve", "deliver", "manage", "lead", "skill"]
+            found = sum(1 for w in interview_words if w in transcript_lower)
+            content_score += min(10, found * 3)
+
+        elif practice_context == "Sales Pitch":
+            if word_count > 40: content_score += 5
+            
+            # Persuasion and Call-To-Action
+            sales_words = ["value", "benefit", "solution", "ROI", "opportunity", "partner", "next steps"]
+            found = sum(1 for w in sales_words if w in transcript_lower)
+            content_score += min(12, found * 3)
+            
+            # Energy/Confidence markers
+            confidence_words = ["guarantee", "certainly", "absolutely", "proven", "ensure"]
+            found_conf = sum(1 for w in confidence_words if w in transcript_lower)
+            content_score += min(8, found_conf * 2)
+
+        elif practice_context == "Presentation":
+            if word_count > 50: content_score += 8
+            
+            # Storytelling / Sequencing markers
+            sequence_words = ["first", "imagine", "example", "finally", "next", "in conclusion", "start by"]
+            found_seq = sum(1 for w in sequence_words if w in transcript_lower)
+            content_score += min(10, found_seq * 3)
+            
+            # Audience Engagement
+            engage_words = ["you", "we", "us", "together", "notice", "consider"]
+            found_engage = sum(1 for w in engage_words if w in transcript_lower)
+            content_score += min(7, found_engage * 2)
+
+        else:
+            # Default Generic Evaluation
+            if word_count > 40: content_score += 10
+            elif word_count > 20: content_score += 5
+            
+            persuasive_words = ["because", "example", "reason", "therefore", "significant", "impact", "result"]
+            found_persuasive = sum(1 for w in persuasive_words if w in transcript_lower)
+            content_score += min(8, found_persuasive * 2)
+            
+            sequence_words = ["first", "second", "then", "finally", "next", "in conclusion", "start by"]
+            found_seq = sum(1 for w in sequence_words if w in transcript_lower)
+            content_score += min(7, found_seq * 2)
+            
         content_score = min(30, max(0, content_score))
         
         # 2. Evidence-Based Interpretation

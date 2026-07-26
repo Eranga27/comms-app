@@ -15,6 +15,7 @@ class Session(Base):
     id = Column(String, primary_key=True, index=True) # The WebSocket session ID
     user_id = Column(Integer, ForeignKey("users.id"), nullable=True) # Nullable for MVP anonymous testing
     session_label = Column(String, nullable=True) # E.g., "Sales Pitch", "Interview"
+    practice_context = Column(String, nullable=True, default="Custom Practice")
     
     # --- CAF V1.0 CORE CATEGORY SCORES ---
     duration_seconds = Column(Integer, default=0)

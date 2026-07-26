@@ -33,7 +33,7 @@ export default function ResultsClientPage({ session, feedback, id }: { session: 
               Export PDF
             </button>
             <Link 
-              href="/dashboard"
+              href="/v1/dashboard"
               className="px-6 py-2 glass-panel text-white rounded-full font-medium hover:bg-slate-800 transition-colors print:hidden"
             >
               Back to Dashboard

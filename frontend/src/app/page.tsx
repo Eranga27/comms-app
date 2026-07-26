@@ -25,16 +25,16 @@ export default function Home() {
 
         <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto justify-center">
           <Link 
-            href="/dashboard" 
+            href="/v2/dashboard" 
             className="px-10 py-4 rounded-xl bg-primary-600 hover:bg-primary-500 text-white font-bold text-lg transition-all duration-300 transform hover:-translate-y-1 shadow-[0_0_30px_rgba(20,184,166,0.4)] text-center"
           >
-            Start Practicing for Free
+            Launch V2 (New Experience)
           </Link>
           <Link 
-            href="#demo" 
+            href="/v1/dashboard" 
             className="px-10 py-4 rounded-xl glass-panel hover:bg-slate-800 border border-slate-700 text-white font-bold text-lg transition-all duration-300 text-center"
           >
-            Watch How It Works
+            Launch V1 (Classic)
           </Link>
         </div>
         
@@ -145,7 +145,7 @@ export default function Home() {
                  <li className="flex gap-3 text-slate-300"><span className="text-emerald-400">✓</span> Basic filler word tracking</li>
                  <li className="flex gap-3 text-slate-300"><span className="text-emerald-400">✓</span> Overall communication grade</li>
                </ul>
-               <Link href="/dashboard" className="w-full block text-center py-3 rounded-lg glass-panel hover:bg-slate-800 text-white font-medium transition-colors">
+               <Link href="/v2/dashboard" className="w-full block text-center py-3 rounded-lg glass-panel hover:bg-slate-800 text-white font-medium transition-colors">
                   Get Started
                </Link>
             </div>
@@ -161,7 +161,7 @@ export default function Home() {
                  <li className="flex gap-3 text-slate-300"><span className="text-emerald-400">✓</span> PDF Export & Shareable links</li>
                  <li className="flex gap-3 text-slate-300"><span className="text-emerald-400">✓</span> Historical progress tracking</li>
                </ul>
-               <Link href="/dashboard" className="w-full block text-center py-3 rounded-lg bg-primary-600 hover:bg-primary-500 text-white font-medium shadow-lg transition-colors">
+               <Link href="/v2/dashboard" className="w-full block text-center py-3 rounded-lg bg-primary-600 hover:bg-primary-500 text-white font-medium shadow-lg transition-colors">
                   Upgrade to Pro
                </Link>
             </div>

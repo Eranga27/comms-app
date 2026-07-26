@@ -28,7 +28,16 @@ def get_all_sessions(db: Session = Depends(get_db)):
         "timestamp": s.created_at.isoformat() if s.created_at else None,
         "duration_seconds": s.duration_seconds,
         "overall_score": s.overall_score,
-        "session_label": s.session_label
+        "session_label": s.session_label,
+        "practice_context": s.practice_context,
+        "speech_score": s.speech_score,
+        "facial_score": s.facial_score,
+        "gesture_score": s.gesture_score,
+        "posture_score": s.posture_score,
+        "content_score": s.content_score,
+        "eye_contact_score": s.eye_contact_score,
+        "filler_words_count": s.filler_words_count,
+        "communication_grade": s.communication_grade
     } for s in db_sessions]
 
 @router.get("/session/{session_id}")
@@ -53,7 +62,8 @@ def get_session(session_id: str, db: Session = Depends(get_db)):
         "transcript": db_session.transcript,
         "timeline_events": db_session.timeline_events,
         "behavioral_flags": db_session.behavioral_flags,
-        "feedback_summary": db_session.feedback_summary
+        "feedback_summary": db_session.feedback_summary,
+        "practice_context": db_session.practice_context
     }
 
 @router.delete("/session/{session_id}")
@@ -88,7 +98,8 @@ async def practice_session_websocket(websocket: WebSocket, session_id: str, db: 
         "filler_words_count": 0,
         "timeline_events": [],
         "behavioral_flags": set(),
-        "session_label": "Practice Session"
+        "session_label": "Practice Session",
+        "practice_context": "Custom Practice"
     }
     
     print(f"Session {session_id} connected via WebSocket.")
@@ -104,6 +115,8 @@ async def practice_session_websocket(websocket: WebSocket, session_id: str, db: 
                     data = payload.get("data")
                     if data and data.get("label"):
                         session_state[session_id]["session_label"] = data.get("label")
+                    if data and data.get("practice_context"):
+                        session_state[session_id]["practice_context"] = data.get("practice_context")
                         
                 elif msg_type == "client_metrics":
                     data = payload.get("data")
@@ -237,7 +250,8 @@ async def practice_session_websocket(websocket: WebSocket, session_id: str, db: 
                     transcript=full_transcript,
                     duration=duration,
                     caf_report=caf_report,
-                    timeline_events=state.get("timeline_events", [])
+                    timeline_events=state.get("timeline_events", []),
+                    practice_context=state.get("practice_context", "Custom Practice")
                 )
                 
                 # 3. Final Calculations
@@ -253,6 +267,7 @@ async def practice_session_websocket(websocket: WebSocket, session_id: str, db: 
                 db_session = models.Session(
                     id=session_id,
                     session_label=state.get("session_label", "Practice Session"),
+                    practice_context=state.get("practice_context", "Custom Practice"),
                     duration_seconds=duration,
                     overall_score=total_score,
                     speech_score=caf_report["categories"]["speech_delivery"]["total"],
@@ -342,7 +357,8 @@ async def process_session_audio(session_id: str, file: UploadFile = File(...), d
                 transcript=better_transcript,
                 duration=db_session.duration_seconds,
                 caf_report=caf_report,
-                timeline_events=db_session.timeline_events or []
+                timeline_events=db_session.timeline_events or [],
+                practice_context=db_session.practice_context or "Custom Practice"
             )
             
             content_score = report.get("content_score", 15)

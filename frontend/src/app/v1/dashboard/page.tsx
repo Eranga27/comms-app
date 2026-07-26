@@ -88,7 +88,7 @@ export default function DashboardPage() {
             <p className="text-slate-400 mt-2">Here is an overview of your communication progress.</p>
           </div>
           <Link 
-            href="/practice" 
+            href="/v1/practice" 
             className="px-6 py-3 bg-primary-600 hover:bg-primary-500 text-white rounded-full font-medium shadow-[0_0_20px_-5px_rgba(20,184,166,0.5)] transition-transform hover:scale-105"
           >
             + Start New Session
@@ -150,7 +150,7 @@ export default function DashboardPage() {
                 </div>
               ) : (
                 sessions.map((session: any) => (
-                  <Link href={`/results/${session.id}`} key={session.id} className="block group">
+                  <Link href={`/v1/results/${session.id}`} key={session.id} className="block group">
                       <div className="glass-panel p-6 rounded-2xl flex items-center justify-between border border-transparent group-hover:border-primary-500/30 transition-all">
                         <div className="flex items-center gap-4">
                           <div className={`w-14 h-14 rounded-full flex items-center justify-center font-bold text-xl bg-slate-800 ${session.overall_score >= 80 ? 'text-emerald-400' : 'text-amber-400'}`}>

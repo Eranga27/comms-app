@@ -468,7 +468,7 @@ export default function PracticeSession() {
                 
                 // Allow backend processing time, then route
                 setTimeout(() => {
-                    router.push(`/results/${sessionIdRef.current}`);
+                    router.push(`/v1/results/${sessionIdRef.current}`);
                 }, 1000);
             }
         };
@@ -477,7 +477,7 @@ export default function PracticeSession() {
         // Fallback if mediaRecorder failed
         if (sessionIdRef.current) {
             setTimeout(() => {
-                router.push(`/results/${sessionIdRef.current}`);
+                router.push(`/v1/results/${sessionIdRef.current}`);
             }, 3500);
         }
     }
@@ -573,7 +573,7 @@ export default function PracticeSession() {
                 </button>
               )}
               <Link 
-                href="/dashboard"
+                href="/v1/dashboard"
                 className="px-6 py-3 bg-slate-800 hover:bg-slate-700 text-white rounded-full font-medium shadow-lg transition-colors z-30"
               >
                 Cancel

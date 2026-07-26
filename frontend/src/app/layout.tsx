@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Inter, Outfit } from "next/font/google";
 import "./globals.css";
 
 import Navbar from "@/components/Navbar";
 
-const inter = Inter({ subsets: ["latin"] });
+const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
+const outfit = Outfit({ subsets: ["latin"], variable: "--font-outfit" });
 
 export const metadata: Metadata = {
   title: "SpeakIQ - Communication Coach",
@@ -17,8 +18,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark" suppressHydrationWarning>
-      <body className={`${inter.className} antialiased text-slate-100 bg-slate-950`} suppressHydrationWarning>
+    <html lang="en" className={`dark ${inter.variable} ${outfit.variable}`} suppressHydrationWarning>
+      <body className={`${inter.className} font-sans antialiased text-slate-100 min-h-screen`} suppressHydrationWarning>
         <Navbar />
         {children}
       </body>

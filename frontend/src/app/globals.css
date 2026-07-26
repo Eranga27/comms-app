@@ -8,8 +8,12 @@
   --color-primary-900: #134e4a;
   --color-background-start: #0f172a;
   --color-background-end: #020617;
-  --color-glass-border: rgba(255, 255, 255, 0.1);
-  --color-glass-bg: rgba(15, 23, 42, 0.6);
+  --color-glass-border: rgba(255, 255, 255, 0.08);
+  --color-glass-bg: rgba(15, 23, 42, 0.4);
+  
+  /* Font Mapping for Tailwind v4 */
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-outfit), var(--font-inter), ui-sans-serif, system-ui, sans-serif;
 }
 
 @layer base {
@@ -17,6 +21,15 @@
     --background: #020617;
     --foreground: #f8fafc;
   }
+  
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-display);
+  }
+}
+
+::selection {
+  background-color: rgba(20, 184, 166, 0.3);
+  color: #fff;
 }
 
 body {
