@@ -12,6 +12,8 @@ class User(Base):
     hashed_password = Column(String, nullable=True)
     auth_provider = Column(String, default="local") # local, google, github
     provider_id = Column(String, nullable=True, index=True)
+    is_verified = Column(Integer, default=0) # 0 = False, 1 = True (SQLite fallback)
+    otp_code = Column(String, nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
 class Session(Base):
