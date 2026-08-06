@@ -7,7 +7,9 @@ import Script from "next/script";
 
 type FeedbackMessage = {
   message: string;
+  shortMessage?: string;
   type: string;
+  id?: number;
 };
 
 type GoalOption = {
@@ -56,6 +58,9 @@ export default function PracticeSession() {
   const [handsDetected, setHandsDetected] = useState<boolean>(false);
   const [isSmiling, setIsSmiling] = useState<boolean>(false);
   const [isGoodPosture, setIsGoodPosture] = useState<boolean>(false);
+  
+  const [activeToast, setActiveToast] = useState<FeedbackMessage | null>(null);
+  const toastTimerRef = useRef<NodeJS.Timeout | null>(null);
   
   const [transcript, setTranscript] = useState<string>("");
   const transcriptRef = useRef<string>(""); 
@@ -268,8 +273,9 @@ export default function PracticeSession() {
      }
   }, [scriptsLoaded, mediaReady, setupMediaPipe]);
 
-  const handleScriptLoad = () => {
+  const handleScriptLoad = useCallback(() => {
       if ((window as any).FaceMesh && (window as any).Hands && (window as any).Pose && (window as any).drawConnectors) {
+          if (faceMeshRef.current) return;
           const FaceMesh = (window as any).FaceMesh;
           const Hands = (window as any).Hands;
           const Pose = (window as any).Pose;
@@ -310,7 +316,13 @@ export default function PracticeSession() {
           
           setScriptsLoaded(true);
       }
-  };
+  }, []);
+
+  useEffect(() => {
+      if ((window as any).FaceMesh && (window as any).Hands && (window as any).Pose && (window as any).drawConnectors) {
+          handleScriptLoad();
+      }
+  }, [handleScriptLoad]);
 
   const startRecordingSession = async () => {
     if (!scriptsLoaded) return;
@@ -477,17 +489,23 @@ export default function PracticeSession() {
         const data = JSON.parse(event.data);
         if (data.type === "feedback") {
           let msg = data.data.message;
+          let shortMsg = data.data.message;
           // V2: Replace generic prompts with explanatory coaching
           if (msg === "Try to look at the camera.") {
              msg = "Try maintaining steady eye contact with the lens. Consistent eye contact projects confidence and keeps the audience engaged.";
+             shortMsg = "Look at the camera";
           } else if (msg === "Great eye contact!") {
              msg = "Excellent eye contact! Holding your gaze steady makes your message land with greater impact.";
+             shortMsg = "Great eye contact!";
           } else if (msg === "Keep your hands visible.") {
              msg = "Your hands have moved out of frame. Visible hand gestures generally improve perceived openness and audience trust.";
+             shortMsg = "Keep hands visible";
           } else if (msg === "Good use of gestures!") {
              msg = "Great body language! Open hand gestures perfectly complement your spoken message.";
+             shortMsg = "Good use of gestures!";
           } else if (msg === "Sit upright to command presence.") {
              msg = "Your posture appears relaxed. Sitting upright and centering yourself in the frame helps project immediate authority.";
+             shortMsg = "Sit upright";
           } else if (msg.includes("Try to avoid filler words like")) {
              const match = msg.match(/'([^']+)'/);
              const word = match ? match[1] : "that";
@@ -495,9 +513,18 @@ export default function PracticeSession() {
              liveFillerRef.current += 1;
              setLiveFillers(liveFillerRef.current);
              msg = `You used a filler word ('${word}'). Embracing silence instead of using filler sounds builds stronger executive presence.`;
+             shortMsg = `Avoid filler word: '${word}'`;
           }
           data.data.message = msg;
+          data.data.shortMessage = shortMsg;
+          data.data.id = Date.now();
           setFeedback(prev => [...prev, data.data].slice(-3));
+          
+          setActiveToast(data.data);
+          if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
+          toastTimerRef.current = setTimeout(() => {
+              setActiveToast(null);
+          }, 3000);
         }
       } catch (err) {}
     };
@@ -683,12 +710,18 @@ export default function PracticeSession() {
               )}
 
               {/* Contextual Coaching Overlay (One at a time) */}
-              {isRecording && feedback.length > 0 && (
-                 <div className="absolute bottom-24 left-0 right-0 flex justify-center px-4 z-20 pointer-events-none">
-                    <div className="max-w-2xl bg-slate-950/95 backdrop-blur-xl border border-slate-700/50 p-5 rounded-2xl shadow-2xl animate-fade-in text-center transition-all duration-300">
-                       <p className={`text-base md:text-lg font-medium leading-relaxed ${feedback[feedback.length - 1].type === 'positive' ? 'text-emerald-400' : 'text-amber-400'}`}>
-                          {feedback[feedback.length - 1].message}
-                       </p>
+              {isRecording && activeToast && (
+                 <div className="fixed bottom-6 right-6 z-50 pointer-events-none flex flex-col gap-2">
+                    <div className="w-72 bg-slate-900/95 backdrop-blur-xl border-l-4 p-4 rounded-xl shadow-2xl animate-fade-in transition-all duration-300" 
+                         style={{ borderLeftColor: activeToast.type === 'positive' ? '#10b981' : '#f59e0b' }}>
+                       <div className="flex items-start gap-3">
+                           <div className="text-xl">
+                               {activeToast.type === 'positive' ? '✅' : '💡'}
+                           </div>
+                           <p className={`text-sm font-semibold mt-0.5 ${activeToast.type === 'positive' ? 'text-emerald-400' : 'text-amber-400'}`}>
+                              {activeToast.shortMessage || activeToast.message}
+                           </p>
+                       </div>
                     </div>
                  </div>
               )}

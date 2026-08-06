@@ -12,6 +12,7 @@ async def generate_coaching_report(transcript: str, duration: int, caf_report: d
         tips = []
         
         # 1. Content Score Calculation (Max 30) - Advanced Local Heuristics
+        transcript_lower = transcript.lower() if transcript else ""
         word_count = len(transcript.split()) if transcript else 0
         content_score = 5 # Base
         
