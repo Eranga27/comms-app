@@ -1,13 +1,36 @@
+# Node / Next.js
 node_modules/
 .next/
 dist/
 build/
-backend/venv/
-backend/__pycache__/
-.env
-.DS_Store
 frontend/node_modules/
 frontend/.next/
 frontend/.env
 frontend/.env.local
+
+# Python / backend
+backend/venv/
+backend/.venv/
+.venv/
+backend/__pycache__/
+**/__pycache__/
+*.pyc
+*.pyo
+
+# Environment secrets — NEVER commit these
+.env
 backend/.env
+frontend/.env.local
+
+# SQLite databases
+*.db
+*.sqlite3
+
+# Session media recordings (can be large)
+frontend/public/sessions_media/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/

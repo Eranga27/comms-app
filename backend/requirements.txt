@@ -5,9 +5,7 @@ pydantic>=2.8.2
 pydantic-settings>=2.0.0
 sqlalchemy>=2.0.31
 python-multipart>=0.0.9
-redis>=5.0.7
 python-dotenv>=1.0.1
-opencv-python-headless<5.0.0
-mediapipe>=0.10.0
+psycopg2-binary>=2.9.9
 faster-whisper>=1.2.1
 alembic>=1.13.2

@@ -1,0 +1,24 @@
+services:
+  - type: web
+    name: speakiq-backend
+    runtime: python
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: speakiq-db
+          property: connectionString
+      - key: ALLOWED_ORIGINS
+        sync: false   # Set this manually in Render dashboard to your Vercel URL
+      - key: OPENAI_API_KEY
+        sync: false   # Optional — for future GPT integration
+    healthCheckPath: /
+    autoDeploy: true
+
+databases:
+  - name: speakiq-db
+    databaseName: speakiq
+    user: speakiq_user
+    plan: free
