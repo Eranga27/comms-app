@@ -175,7 +175,7 @@ def get_me(current_user: User = Depends(get_current_user)):
 @router.get("/google/login")
 def google_login():
     if not GOOGLE_CLIENT_ID:
-        raise HTTPException(status_code=501, detail="Google OAuth is not configured on this server.")
+        return RedirectResponse(f"{FRONTEND_URL}/?oauth_error=Google+OAuth+is+not+configured+yet.+Please+add+GOOGLE_CLIENT_ID+to+the+server+.env+file.")
     params = (
         f"client_id={GOOGLE_CLIENT_ID}"
         f"&redirect_uri={FRONTEND_URL.rstrip('/')}/api/auth/google/callback"
@@ -237,7 +237,7 @@ async def google_callback(code: str, db: Session = Depends(get_db)):
 @router.get("/github/login")
 def github_login():
     if not GITHUB_CLIENT_ID:
-        raise HTTPException(status_code=501, detail="GitHub OAuth is not configured on this server.")
+        return RedirectResponse(f"{FRONTEND_URL}/?oauth_error=GitHub+OAuth+is+not+configured+yet.+Please+add+GITHUB_CLIENT_ID+to+the+server+.env+file.")
     params = (
         f"client_id={GITHUB_CLIENT_ID}"
         f"&redirect_uri={FRONTEND_URL.rstrip('/')}/api/auth/github/callback"

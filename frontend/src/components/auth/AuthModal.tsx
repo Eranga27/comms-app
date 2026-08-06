@@ -6,21 +6,30 @@ import { Logo } from '../common/Logo';
 
 type ModalStep = 'auth' | 'otp';
 
-// Picks up the ?token=… query param placed by OAuth callbacks
-function useOAuthTokenCapture() {
-  const { login } = useAuth();
+// Picks up ?token=… (OAuth success) and ?oauth_error=… (OAuth failure) from callbacks
+function useOAuthTokenCapture(setError: (e: string) => void) {
+  const { login, setShowAuthModal } = useAuth();
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const token = params.get('token');
-    if (!token) return;
-    // Remove it from the URL immediately
+    const oauthError = params.get('oauth_error');
+    
+    if (!token && !oauthError) return;
+    // Remove params from URL immediately
     window.history.replaceState({}, '', window.location.pathname);
-    // Fetch the user profile with this token
-    fetch('/api/auth/me', { headers: { Authorization: `Bearer ${token}` } })
-      .then(r => r.ok ? r.json() : null)
-      .then(user => { if (user) login(token, user); })
-      .catch(() => {});
-  }, [login]);
+
+    if (oauthError) {
+      setError(decodeURIComponent(oauthError));
+      setShowAuthModal(true);
+      return;
+    }
+    if (token) {
+      fetch('/api/auth/me', { headers: { Authorization: `Bearer ${token}` } })
+        .then(r => r.ok ? r.json() : null)
+        .then(user => { if (user) login(token, user); })
+        .catch(() => {});
+    }
+  }, [login, setShowAuthModal, setError]);
 }
 
 // Password strength indicator
@@ -94,8 +103,6 @@ function OtpInput({ value, onChange, onComplete }: {
 }
 
 export function AuthModal() {
-  useOAuthTokenCapture();
-
   const { showAuthModal, setShowAuthModal, login } = useAuth();
   const [isLogin, setIsLogin] = useState(true);
   const [step, setStep] = useState<ModalStep>('auth');
@@ -111,6 +118,9 @@ export function AuthModal() {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(false);
+
+  // Must be called after setError is declared
+  useOAuthTokenCapture(setError);
 
   // Cooldown timer for resend
   useEffect(() => {
