@@ -13,7 +13,7 @@ export function SiteFooter() {
             </a>
           )}
         </nav>
-        <p className="font-mono text-[12px] text-slate-600">© 2026 SpeakIQ</p>
+        <p className="font-mono text-[12px] text-slate-600">© 2026 Eloquent One</p>
       </div>
     </footer>);
 

@@ -67,7 +67,7 @@ export function Settings() {
           <div className="mt-5 flex items-center justify-between gap-4 border-b border-slate-800 pb-5">
             <div>
               <p className="font-medium text-white">Appearance</p>
-              <p className="mt-0.5 text-[13px] text-slate-500">SpeakIQ is designed for dark mode.</p>
+              <p className="mt-0.5 text-[13px] text-slate-500">Eloquent One is designed for dark mode.</p>
             </div>
             <div className="inline-flex rounded-xl border border-slate-800 bg-slate-900/60 p-1">
               {(['dark', 'light'] as const).map((t) =>

@@ -55,13 +55,13 @@ export default function DashboardPage() {
   const [activeGoal, setActiveGoal] = useState<{label:string; id:string; metric:string} | null>(null);
 
   useEffect(() => {
-    const storedName = localStorage.getItem("speakiq_name");
+    const storedName = localStorage.getItem("eloquent-one_name");
     if (storedName) setUserName(storedName);
-    if (!localStorage.getItem("speakiq_onboarded")) setShowOnboarding(true);
+    if (!localStorage.getItem("eloquent-one_onboarded")) setShowOnboarding(true);
 
     // Load active goal
     try {
-      const raw = localStorage.getItem("speakiq_active_goal");
+      const raw = localStorage.getItem("eloquent-one_active_goal");
       if (raw) setActiveGoal(JSON.parse(raw));
     } catch {}
 
@@ -174,7 +174,7 @@ export default function DashboardPage() {
                 Practice Now →
               </Link>
               <button
-                onClick={() => { localStorage.removeItem("speakiq_active_goal"); setActiveGoal(null); }}
+                onClick={() => { localStorage.removeItem("eloquent-one_active_goal"); setActiveGoal(null); }}
                 className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-400 text-sm font-medium rounded-lg transition-colors"
                 title="Clear this goal"
               >
@@ -394,7 +394,7 @@ export default function DashboardPage() {
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
           <div className="bg-slate-900 border border-slate-800 p-10 rounded-3xl w-full max-w-lg shadow-2xl relative overflow-hidden">
             <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary-500 to-emerald-500" />
-            <h2 className="text-3xl font-bold text-white mb-3">Welcome to SpeakIQ V2</h2>
+            <h2 className="text-3xl font-bold text-white mb-3">Welcome to Eloquent One V2</h2>
             <p className="text-slate-400 mb-8 leading-relaxed text-sm">
               Your personal communication intelligence platform. Every session builds toward a measurable improvement journey, powered entirely by on-device AI.
             </p>
@@ -403,13 +403,13 @@ export default function DashboardPage() {
               type="text"
               value={onboardingInput}
               onChange={e => setOnboardingInput(e.target.value)}
-              onKeyDown={e => e.key === 'Enter' && (localStorage.setItem("speakiq_onboarded","true"), onboardingInput.trim() && (localStorage.setItem("speakiq_name", onboardingInput.trim()), setUserName(onboardingInput.trim())), setShowOnboarding(false))}
+              onKeyDown={e => e.key === 'Enter' && (localStorage.setItem("eloquent-one_onboarded","true"), onboardingInput.trim() && (localStorage.setItem("eloquent-one_name", onboardingInput.trim()), setUserName(onboardingInput.trim())), setShowOnboarding(false))}
               className="w-full bg-slate-950 border border-slate-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-primary-500 mb-8"
               placeholder="Enter your name..."
               autoFocus
             />
             <button
-              onClick={() => { localStorage.setItem("speakiq_onboarded","true"); if (onboardingInput.trim()) { localStorage.setItem("speakiq_name", onboardingInput.trim()); setUserName(onboardingInput.trim()); } setShowOnboarding(false); }}
+              onClick={() => { localStorage.setItem("eloquent-one_onboarded","true"); if (onboardingInput.trim()) { localStorage.setItem("eloquent-one_name", onboardingInput.trim()); setUserName(onboardingInput.trim()); } setShowOnboarding(false); }}
               className="w-full py-4 rounded-xl bg-primary-600 hover:bg-primary-500 text-white font-bold text-lg transition-all"
             >
               Begin My Journey

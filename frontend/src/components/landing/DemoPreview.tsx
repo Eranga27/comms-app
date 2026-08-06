@@ -23,7 +23,7 @@ export function DemoPreview() {
               <span className="h-3 w-3 rounded-full bg-emerald-500/80" />
             </div>
             <div className="mx-auto flex items-center gap-2 rounded-md bg-slate-950/60 px-3 py-1 font-mono text-[11px] text-slate-500">
-              speakiq.app/v2/practice
+              eloquent-one.app/v2/practice
             </div>
           </div>
 

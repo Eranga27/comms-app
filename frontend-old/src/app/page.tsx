@@ -427,7 +427,7 @@ export default function Home() {
             <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary-500 to-emerald-500 flex items-center justify-center text-white font-bold text-sm">
               S
             </div>
-            <span className="text-lg font-bold text-white tracking-tight">SpeakIQ</span>
+            <span className="text-lg font-bold text-white tracking-tight">Eloquent One</span>
           </div>
           
           <div className="flex gap-8 text-sm text-slate-500 font-medium">
@@ -437,7 +437,7 @@ export default function Home() {
           </div>
           
           <div className="text-sm text-slate-600 font-light">
-             © {new Date().getFullYear()} SpeakIQ. All rights reserved.
+             © {new Date().getFullYear()} Eloquent One. All rights reserved.
           </div>
         </div>
       </footer>

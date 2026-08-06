@@ -8,7 +8,7 @@ const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 const outfit = Outfit({ subsets: ["latin"], variable: "--font-outfit" });
 
 export const metadata: Metadata = {
-  title: "SpeakIQ - Communication Coach",
+  title: "Eloquent One - Communication Coach",
   description: "Improve your interview performance and public speaking with real-time telemetry feedback.",
 };
 

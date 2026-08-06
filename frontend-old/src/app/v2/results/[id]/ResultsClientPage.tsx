@@ -39,7 +39,7 @@ export default function ResultsClientPage({ session, feedback, id }: { session: 
 
   useEffect(() => {
     try {
-      const raw = localStorage.getItem("speakiq_active_goal");
+      const raw = localStorage.getItem("eloquent-one_active_goal");
       if (!raw) return;
       const goalData = JSON.parse(raw);
       // Fetch sessions list to get prev

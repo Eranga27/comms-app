@@ -6,6 +6,7 @@ import { formatClock } from '../../hooks/usePracticeSession';
 
 interface CameraStageProps {
   videoRef: React.RefObject<HTMLVideoElement>;
+  canvasRef: React.RefObject<HTMLCanvasElement>;
   state: SessionState;
   cameraReady: boolean;
   engineReady: boolean;
@@ -29,6 +30,7 @@ const statusChips = [
 
 export function CameraStage({
   videoRef,
+  canvasRef,
   state,
   cameraReady,
   engineReady,
@@ -55,8 +57,12 @@ export function CameraStage({
           muted
           className="h-full w-full object-cover"
           style={{ transform: 'scaleX(-1)' }} />
+          
+        <canvas
+          ref={canvasRef}
+          className="absolute inset-0 h-full w-full object-cover"
+          style={{ transform: 'scaleX(-1)' }} />
         
-
         {mode === 'analyst' && !booting && <TrackingOverlay />}
 
         {booting &&

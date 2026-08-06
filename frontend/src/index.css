@@ -21,10 +21,10 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 ::selection {
-  background-color: rgba(20, 184, 166, 0.3);
+  background-color: rgba(99, 102, 241, 0.3);
 }
 .gradient-text {
-  background-image: linear-gradient(to right, #2dd4bf, #34d399, #2dd4bf);
+  background-image: linear-gradient(to right, #818cf8, #a78bfa, #818cf8);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;

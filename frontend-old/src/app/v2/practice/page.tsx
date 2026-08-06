@@ -344,7 +344,7 @@ export default function PracticeSession() {
       // Store goal in localStorage for results page to read
       const goalObj = GOAL_OPTIONS.find(g => g.id === practiceGoal);
       const goalLabel = practiceGoal === "custom" ? (customGoalText || "Custom Goal") : (goalObj?.label ?? practiceGoal);
-      localStorage.setItem("speakiq_active_goal", JSON.stringify({ id: practiceGoal, label: goalLabel, metric: goalObj?.metric ?? "overall", sessionId: sessionIdRef.current }));
+      localStorage.setItem("eloquent-one_active_goal", JSON.stringify({ id: practiceGoal, label: goalLabel, metric: goalObj?.metric ?? "overall", sessionId: sessionIdRef.current }));
 
       // Reset live counters
       liveFillerRef.current = 0;

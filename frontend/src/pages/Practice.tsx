@@ -51,6 +51,7 @@ export function Practice() {
           <div className="space-y-5">
             <CameraStage
               videoRef={session.videoRef}
+              canvasRef={session.canvasRef}
               state={session.state}
               cameraReady={session.cameraReady}
               engineReady={session.engineReady}

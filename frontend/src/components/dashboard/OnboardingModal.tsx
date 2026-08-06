@@ -22,7 +22,7 @@ export function OnboardingModal({ onComplete }: OnboardingModalProps) {
         
         <Logo size="sm" />
         <h2 id="onboarding-title" className="mt-6 font-display text-3xl font-bold tracking-tight text-white">
-          Welcome to SpeakIQ V2
+          Welcome to Eloquent One V2
         </h2>
         <p className="mt-3 text-[15px] leading-relaxed text-slate-400">
           Every session you record builds a picture of how you communicate — what already works, and the

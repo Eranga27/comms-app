@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { PlusIcon } from 'lucide-react';
 import { AmbientGlow } from '../components/common/AmbientGlow';
+import { FadeIn } from '../components/common/FadeIn';
 import { ActiveGoalBanner } from '../components/dashboard/ActiveGoalBanner';
 import { LevelCard } from '../components/dashboard/LevelCard';
 import { OnboardingModal } from '../components/dashboard/OnboardingModal';
@@ -45,37 +46,48 @@ export function Dashboard() {
         </header>
 
         {goalVisible &&
-        <div className="mt-8">
+        <FadeIn delay={0.1}>
+          <div className="mt-8">
             <ActiveGoalBanner onDismiss={() => setGoalVisible(false)} />
           </div>
+        </FadeIn>
         }
 
-        <div className="mt-6 grid gap-5 lg:grid-cols-3">
-          <LevelCard score={78} level="Advanced Communicator" grade="A-" />
-          <div className="lg:col-span-2">
-            <QuickStats stats={quickStats} />
+        <FadeIn delay={0.2}>
+          <div className="mt-6 grid gap-5 lg:grid-cols-3">
+            <LevelCard score={78} level="Advanced Communicator" grade="A-" />
+            <div className="lg:col-span-2">
+              <QuickStats stats={quickStats} />
+            </div>
           </div>
-        </div>
+        </FadeIn>
 
-        <div className="mt-5">
-          <ProgressChart data={trend} />
-        </div>
+        <FadeIn delay={0.3}>
+          <div className="mt-5">
+            <ProgressChart data={trend} />
+          </div>
+        </FadeIn>
 
-        <div className="mt-5 grid gap-5 lg:grid-cols-2">
-          <SessionComparison skills={skillComparison} />
-          <PersonalInsights />
-        </div>
+        <FadeIn delay={0.4}>
+          <div className="mt-5 grid gap-5 lg:grid-cols-2">
+            <SessionComparison skills={skillComparison} />
+            <PersonalInsights />
+          </div>
+        </FadeIn>
 
-        <div className="mt-5">
-          <Recommended />
-        </div>
+        <FadeIn>
+          <div className="mt-5">
+            <Recommended />
+          </div>
+        </FadeIn>
 
-        <div className="mt-5">
-          <SessionHistory
-            sessions={sessions}
-            onDelete={(id) => setSessions((prev) => prev.filter((s) => s.id !== id))} />
-          
-        </div>
+        <FadeIn>
+          <div className="mt-5">
+            <SessionHistory
+              sessions={sessions}
+              onDelete={(id) => setSessions((prev) => prev.filter((s) => s.id !== id))} />
+          </div>
+        </FadeIn>
       </div>
 
       {name === null && <OnboardingModal onComplete={setName} />}

@@ -45,7 +45,7 @@ export default function Navbar() {
             S
           </div>
           <span className="text-2xl font-bold tracking-tight text-white">
-            SpeakIQ
+            Eloquent One
           </span>
         </Link>
 

@@ -19,12 +19,12 @@ export function WhyPlatform() {
           viewport={{ once: true, margin: '-100px' }}
           transition={{ duration: 0.7, ease: 'easeOut' }}>
           
-          <p className="mb-4 text-[11px] font-bold uppercase tracking-widest text-primary-400">Why SpeakIQ</p>
+          <p className="mb-4 text-[11px] font-bold uppercase tracking-widest text-primary-400">Why Eloquent One</p>
           <h2 className="font-display text-4xl font-bold leading-tight tracking-tight text-white sm:text-5xl">
             Transform How You Are Perceived
           </h2>
           <p className="mt-4 text-[17px] leading-relaxed text-slate-400">
-            Most feedback on communication is vague and late. SpeakIQ makes it specific, measurable,
+            Most feedback on communication is vague and late. Eloquent One makes it specific, measurable,
             and available the moment you finish speaking.
           </p>
 

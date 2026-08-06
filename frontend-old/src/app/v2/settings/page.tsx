@@ -7,20 +7,20 @@ export default function SettingsPage() {
   const [savedMessage, setSavedMessage] = useState(false);
 
   useEffect(() => {
-    const name = localStorage.getItem("speakiq_name");
+    const name = localStorage.getItem("eloquent-one_name");
     if (name) setUserName(name);
   }, []);
 
   const handleSave = () => {
-    localStorage.setItem("speakiq_name", userName);
+    localStorage.setItem("eloquent-one_name", userName);
     setSavedMessage(true);
     setTimeout(() => setSavedMessage(false), 3000);
   };
 
   const handleClearData = () => {
     if (confirm("Are you sure you want to clear your local application data? This resets onboarding but does NOT delete backend session videos.")) {
-        localStorage.removeItem("speakiq_name");
-        localStorage.removeItem("speakiq_onboarded");
+        localStorage.removeItem("eloquent-one_name");
+        localStorage.removeItem("eloquent-one_onboarded");
         setUserName("");
         alert("Local data cleared. You will see the onboarding screen next time you visit the dashboard.");
     }

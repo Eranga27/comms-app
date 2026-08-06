@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 class Settings(BaseSettings):
-    PROJECT_NAME: str = "SpeakIQ Communication Coach"
+    PROJECT_NAME: str = "Eloquent One Communication Coach"
     VERSION: str = "0.1.0"
     # Defaulting to SQLite for zero-config MVP local testing.
     # To use PostgreSQL, set DATABASE_URL=postgresql://user:password@localhost:5432/dbname in .env
