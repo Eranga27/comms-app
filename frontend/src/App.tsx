@@ -8,6 +8,9 @@ import { Dashboard } from './pages/Dashboard';
 import { Results } from './pages/Results';
 import { Settings } from './pages/Settings';
 
+import { AuthProvider } from './contexts/AuthContext';
+import { AuthModal } from './components/auth/AuthModal';
+
 function Shell() {
   const location = useLocation();
   const hideNav = location.pathname.startsWith('/v2/practice');
@@ -15,6 +18,7 @@ function Shell() {
   return (
     <div className="min-h-screen w-full bg-slate-950 flex flex-col">
       {!hideNav && <Navbar />}
+      <AuthModal />
       <AnimatePresence mode="wait">
         <Routes location={location} key={location.pathname}>
           <Route path="/" element={<PageTransition><Landing /></PageTransition>} />
@@ -43,8 +47,10 @@ function PageTransition({ children }: { children: React.ReactNode }) {
 
 export function App() {
   return (
-    <BrowserRouter>
-      <Shell />
-    </BrowserRouter>);
-
+    <AuthProvider>
+      <BrowserRouter>
+        <Shell />
+      </BrowserRouter>
+    </AuthProvider>
+  );
 }

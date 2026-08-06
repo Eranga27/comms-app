@@ -17,7 +17,7 @@ export function CoachSummary() {
             🤖
           </span>
           <div>
-            <p className="text-[11px] font-bold uppercase tracking-widest text-violet-400">AI Coach Summary</p>
+            <p className="text-[11px] font-bold uppercase tracking-widest text-violet-400">Executive Coach Summary</p>
             <p className="mt-0.5 text-[13px] text-slate-500">Generated from your full session</p>
           </div>
         </div>

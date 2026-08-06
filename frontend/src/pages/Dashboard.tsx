@@ -1,23 +1,25 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { PlusIcon } from 'lucide-react';
+import { PlusIcon, LogOutIcon } from 'lucide-react';
 import { AmbientGlow } from '../components/common/AmbientGlow';
 import { FadeIn } from '../components/common/FadeIn';
 import { ActiveGoalBanner } from '../components/dashboard/ActiveGoalBanner';
 import { LevelCard } from '../components/dashboard/LevelCard';
-import { OnboardingModal } from '../components/dashboard/OnboardingModal';
 import { PersonalInsights } from '../components/dashboard/PersonalInsights';
 import { ProgressChart } from '../components/dashboard/ProgressChart';
 import { QuickStats } from '../components/dashboard/QuickStats';
 import { Recommended } from '../components/dashboard/Recommended';
 import { SessionComparison } from '../components/dashboard/SessionComparison';
 import { SessionHistory } from '../components/dashboard/SessionHistory';
-import { quickStats, sessionHistory, skillComparison, trend, userName } from '../data/sessions';
+import { quickStats, sessionHistory, skillComparison, trend } from '../data/sessions';
+import { useAuth } from '../contexts/AuthContext';
 
 export function Dashboard() {
-  const [name, setName] = useState<string | null>(null);
+  const { user, logout } = useAuth();
   const [goalVisible, setGoalVisible] = useState(true);
   const [sessions, setSessions] = useState(sessionHistory);
+
+  const displayName = user?.first_name || user?.username || 'Communicator';
 
   return (
     <main className="relative min-h-screen w-full bg-slate-950 px-5 pb-20 pt-24 sm:px-8">
@@ -30,7 +32,7 @@ export function Dashboard() {
               Communication Journey
             </p>
             <h1 className="mt-2 font-display text-4xl font-bold tracking-tight text-white sm:text-5xl">
-              Welcome back, {name ?? userName}
+              Welcome back, {displayName}
             </h1>
             <p className="mt-2 text-[15px] text-slate-400">
               {sessions.length} sessions recorded • Powered by CAF Intelligence Engine V2
@@ -89,8 +91,5 @@ export function Dashboard() {
           </div>
         </FadeIn>
       </div>
-
-      {name === null && <OnboardingModal onComplete={setName} />}
     </main>);
-
 }

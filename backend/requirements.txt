@@ -11,3 +11,6 @@ opencv-python-headless<5.0.0
 mediapipe>=0.10.0
 faster-whisper>=1.2.1
 alembic>=1.13.2
+PyJWT>=2.8.0
+passlib[bcrypt]>=1.7.4
+httpx>=0.27.0

@@ -9,7 +9,7 @@ export const steps = [
   step: 'STEP 2',
   emoji: '📊',
   title: 'Analyse',
-  description: 'AI instantly analyses your speech, body language, and behavioural patterns as you talk.'
+  description: 'The Intelligence Engine instantly analyses your speech, body language, and behavioural patterns as you talk.'
 },
 {
   step: 'STEP 3',
