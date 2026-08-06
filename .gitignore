@@ -22,6 +22,10 @@ backend/__pycache__/
 backend/.env
 frontend/.env.local
 
+# But always commit the safe example templates
+!.env.example
+!**/.env.example
+
 # SQLite databases
 *.db
 *.sqlite3
