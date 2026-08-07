@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { CoachingNote, SessionState } from '../types';
+import { WS_URL } from '../config';
 
 export function formatClock(totalSeconds: number): string {
   const m = Math.floor(totalSeconds / 60);
@@ -225,8 +226,7 @@ export function usePracticeSession(): PracticeSessionApi {
     sessionIdRef.current = sessionId;
     
     // Default ws logic
-    const wsUrl = '/api/ws';
-    const ws = new WebSocket(`${window.location.protocol === 'https:' ? 'wss:' : 'ws:'}//${window.location.host}${wsUrl}/session/${sessionId}`);
+    const ws = new WebSocket(`${WS_URL}/api/ws/session/${sessionId}`);
     wsRef.current = ws;
 
     ws.onopen = async () => {

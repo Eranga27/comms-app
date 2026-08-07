@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { XIcon, GithubIcon, EyeIcon, EyeOffIcon, CheckCircleIcon, AlertCircleIcon } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { Logo } from '../common/Logo';
+import { API_URL } from '../../config';
 
 type ModalStep = 'auth' | 'otp';
 
@@ -24,7 +25,7 @@ function useOAuthTokenCapture(setError: (e: string) => void) {
       return;
     }
     if (token) {
-      fetch('/api/auth/me', { headers: { Authorization: `Bearer ${token}` } })
+      fetch(`${API_URL}/api/auth/me`, { headers: { Authorization: `Bearer ${token}` } })
         .then(r => r.ok ? r.json() : null)
         .then(user => { if (user) login(token, user); })
         .catch(() => {});
@@ -160,7 +161,7 @@ export function AuthModal() {
     try {
       if (isLogin) {
         const body = new URLSearchParams({ username: email.trim().toLowerCase(), password });
-        const res = await fetch('/api/auth/login', {
+        const res = await fetch(`${API_URL}/api/auth/login`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
           body: body.toString(),
@@ -183,7 +184,7 @@ export function AuthModal() {
         login(data.access_token, data.user);
 
       } else {
-        const res = await fetch('/api/auth/register', {
+        const res = await fetch(`${API_URL}/api/auth/register`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ email: email.trim().toLowerCase(), password, first_name: name.trim(), username: name.trim() }),
@@ -220,7 +221,7 @@ export function AuthModal() {
     setError('');
     setLoading(true);
     try {
-      const res = await fetch('/api/auth/verify-otp', {
+      const res = await fetch(`${API_URL}/api/auth/verify-otp`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: pendingEmail, otp_code: code }),
@@ -242,7 +243,7 @@ export function AuthModal() {
   const handleResendOtp = async () => {
     if (resendCooldown > 0) return;
     try {
-      await fetch('/api/auth/register', {
+      await fetch(`${API_URL}/api/auth/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: pendingEmail, password: '__resend__' }),
@@ -255,7 +256,7 @@ export function AuthModal() {
 
   // ── OAuth ───────────────────────────────────────────────────────────────────
   const handleOAuth = (provider: 'google' | 'github') => {
-    window.location.href = `/api/auth/${provider}/login`;
+    window.location.href = `${API_URL}/api/auth/${provider}/login`;
   };
 
   // ── Reset helper ────────────────────────────────────────────────────────────
