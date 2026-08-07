@@ -1,21 +1,22 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
-import { MenuIcon, XIcon } from 'lucide-react';
+import { MenuIcon, XIcon, LogOutIcon } from 'lucide-react';
 import { Logo } from './common/Logo';
 import { navLinks } from '../data/landing';
+import { useAuth } from '../contexts/AuthContext';
 
 const appLinks = [
 { label: 'Dashboard', to: '/v2/dashboard' },
 { label: 'Practice', to: '/v2/practice' },
 { label: 'Settings', to: '/v2/settings' }];
 
-
 export function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
   const location = useLocation();
   const isLanding = location.pathname === '/';
+  const { user, setShowAuthModal, logout } = useAuth();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 12);
@@ -49,7 +50,6 @@ export function Navbar() {
               key={link.label}
               href={link.href}
               className="rounded-lg px-3 py-2 text-sm font-medium text-slate-400 transition-colors hover:text-white">
-              
                     {link.label}
                   </a>
             ) :
@@ -60,25 +60,47 @@ export function Navbar() {
               className={`rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
               location.pathname === link.to ? 'text-white' : 'text-slate-400 hover:text-white'}`
               }>
-              
                     {link.label}
                   </Link>
             )}
-            <a
-              href="#top"
-              className="rounded-lg px-3 py-2 text-sm font-medium text-slate-400 transition-colors hover:text-white">
-              
-              Sign In
-            </a>
+            
+            {!user ? (
+              <button
+                onClick={() => setShowAuthModal(true)}
+                className="rounded-lg px-3 py-2 text-sm font-medium text-slate-400 transition-colors hover:text-white">
+                Sign In
+              </button>
+            ) : null}
           </div>
 
-          <div className="flex items-center gap-2">
-            <Link
-              to="/v2/practice"
-              className="hidden rounded-full bg-white px-5 py-2.5 text-sm font-bold text-slate-950 shadow-lg shadow-white/5 transition-transform duration-300 hover:scale-105 sm:inline-flex">
-              
-              Start Practising
-            </Link>
+          <div className="flex items-center gap-4">
+            {!user ? (
+              <button
+                onClick={() => setShowAuthModal(true)}
+                className="hidden rounded-full bg-white px-5 py-2.5 text-sm font-bold text-slate-950 shadow-lg shadow-white/5 transition-transform duration-300 hover:scale-105 sm:inline-flex">
+                Start Practising
+              </button>
+            ) : (
+              <div className="hidden items-center gap-4 sm:flex">
+                <span className="text-sm font-medium text-slate-300">
+                  {user.first_name || user.username || user.email}
+                </span>
+                <button
+                  onClick={logout}
+                  className="flex items-center justify-center rounded-full bg-slate-800 p-2.5 text-slate-400 transition-colors hover:bg-slate-700 hover:text-white"
+                  aria-label="Log out"
+                >
+                  <LogOutIcon className="h-4 w-4" />
+                </button>
+                {isLanding && (
+                  <Link
+                    to="/v2/dashboard"
+                    className="rounded-full bg-primary-600 px-5 py-2.5 text-sm font-bold text-white shadow-lg shadow-primary-500/20 transition-colors hover:bg-primary-500">
+                    Dashboard
+                  </Link>
+                )}
+              </div>
+            )}
             <button
               type="button"
               onClick={() => setOpen((v) => !v)}
@@ -114,29 +136,48 @@ export function Navbar() {
                 href={link.to}
                 onClick={() => setOpen(false)}
                 className="block border-b border-slate-800/60 py-4 font-display text-2xl font-bold text-white">
-                
                       {link.label}
                     </a> :
 
               <Link
                 to={link.to}
                 className="block border-b border-slate-800/60 py-4 font-display text-2xl font-bold text-white">
-                
                       {link.label}
                     </Link>
               }
                 </motion.div>
             )}
             </div>
-            <Link
-            to="/v2/practice"
-            className="mt-8 rounded-full bg-white px-6 py-4 text-center text-base font-bold text-slate-950">
             
-              Start Practising
-            </Link>
+            {!user ? (
+              <button
+              onClick={() => { setOpen(false); setShowAuthModal(true); }}
+              className="mt-8 rounded-full bg-white px-6 py-4 text-center text-base font-bold text-slate-950">
+                Start Practising
+              </button>
+            ) : (
+              <div className="mt-8 flex flex-col gap-4">
+                <span className="text-center font-display text-xl font-bold text-white">
+                  {user.first_name || user.username || user.email}
+                </span>
+                {isLanding && (
+                  <Link
+                    to="/v2/dashboard"
+                    onClick={() => setOpen(false)}
+                    className="rounded-full bg-primary-600 px-6 py-4 text-center text-base font-bold text-white">
+                    Go to Dashboard
+                  </Link>
+                )}
+                <button
+                  onClick={() => { setOpen(false); logout(); }}
+                  className="rounded-full border border-slate-700 bg-slate-800 px-6 py-4 text-center text-base font-bold text-slate-300">
+                  Log Out
+                </button>
+              </div>
+            )}
           </motion.div>
         }
       </AnimatePresence>
     </>);
-
+}
 }

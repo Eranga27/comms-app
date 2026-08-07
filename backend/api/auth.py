@@ -21,6 +21,7 @@ GOOGLE_CLIENT_SECRET = os.getenv("GOOGLE_CLIENT_SECRET", "")
 GITHUB_CLIENT_ID = os.getenv("GITHUB_CLIENT_ID", "")
 GITHUB_CLIENT_SECRET = os.getenv("GITHUB_CLIENT_SECRET", "")
 FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:3000")
+BACKEND_URL = os.getenv("BACKEND_URL", "http://localhost:8000")
 
 def generate_otp(length: int = 6) -> str:
     return ''.join(random.choices(string.digits, k=length))
@@ -178,7 +179,7 @@ def google_login():
         return RedirectResponse(f"{FRONTEND_URL}/?oauth_error=Google+OAuth+is+not+configured+yet.+Please+add+GOOGLE_CLIENT_ID+to+the+server+.env+file.")
     params = (
         f"client_id={GOOGLE_CLIENT_ID}"
-        f"&redirect_uri={FRONTEND_URL.rstrip('/')}/api/auth/google/callback"
+        f"&redirect_uri={BACKEND_URL.rstrip('/')}/api/auth/google/callback"
         "&response_type=code"
         "&scope=openid%20email%20profile"
         "&access_type=offline"
@@ -195,7 +196,7 @@ async def google_callback(code: str, db: Session = Depends(get_db)):
             "code": code,
             "client_id": GOOGLE_CLIENT_ID,
             "client_secret": GOOGLE_CLIENT_SECRET,
-            "redirect_uri": f"{FRONTEND_URL.rstrip('/')}/api/auth/google/callback",
+            "redirect_uri": f"{BACKEND_URL.rstrip('/')}/api/auth/google/callback",
             "grant_type": "authorization_code",
         })
         token_data = token_res.json()
@@ -240,7 +241,7 @@ def github_login():
         return RedirectResponse(f"{FRONTEND_URL}/?oauth_error=GitHub+OAuth+is+not+configured+yet.+Please+add+GITHUB_CLIENT_ID+to+the+server+.env+file.")
     params = (
         f"client_id={GITHUB_CLIENT_ID}"
-        f"&redirect_uri={FRONTEND_URL.rstrip('/')}/api/auth/github/callback"
+        f"&redirect_uri={BACKEND_URL.rstrip('/')}/api/auth/github/callback"
         "&scope=user:email"
     )
     return RedirectResponse(f"https://github.com/login/oauth/authorize?{params}")
