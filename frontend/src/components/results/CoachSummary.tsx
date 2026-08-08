@@ -1,7 +1,8 @@
 import React from 'react';
-import { coachSummary } from '../../data/results';
+import { useReport } from '../../contexts/ReportContext';
 
 export function CoachSummary() {
+  const { coachSummary } = useReport();
   return (
     <article className="relative overflow-hidden rounded-2xl border border-slate-800/60 bg-slate-900 p-6 sm:p-8">
       <div

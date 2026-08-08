@@ -1,8 +1,9 @@
 import React from 'react';
 import { ScoreRing } from '../common/ScoreRing';
-import { sessionReport } from '../../data/results';
+import { useReport } from '../../contexts/ReportContext';
 
 export function ScoreHero() {
+  const { sessionReport } = useReport();
   const stats = [
   { label: 'Eye Contact', value: `${sessionReport.eyeContact}%` },
   { label: 'Filler Words', value: String(sessionReport.fillerWords) },

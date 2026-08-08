@@ -1,8 +1,9 @@
 import React from 'react';
 import { CheckIcon, TargetIcon } from 'lucide-react';
-import { focusAreas, strengths } from '../../data/results';
+import { useReport } from '../../contexts/ReportContext';
 
 export function StrengthsFocus() {
+  const { strengths, focusAreas } = useReport();
   return (
     <div className="grid gap-5 lg:grid-cols-2">
       <article className="rounded-2xl border border-emerald-500/20 bg-emerald-500/[0.07] p-6">

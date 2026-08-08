@@ -7,9 +7,10 @@ import {
   RadarChart,
   ResponsiveContainer } from
 'recharts';
-import { radarData } from '../../data/results';
+import { useReport } from '../../contexts/ReportContext';
 
 export function DnaRadar() {
+  const { radarData } = useReport();
   return (
     <article className="rounded-2xl border border-slate-800/60 bg-slate-900 p-6">
       <p className="text-[11px] font-bold uppercase tracking-widest text-slate-500">Communication DNA</p>

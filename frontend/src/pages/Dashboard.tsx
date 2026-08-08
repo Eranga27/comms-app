@@ -11,15 +11,25 @@ import { QuickStats } from '../components/dashboard/QuickStats';
 import { Recommended } from '../components/dashboard/Recommended';
 import { SessionComparison } from '../components/dashboard/SessionComparison';
 import { SessionHistory } from '../components/dashboard/SessionHistory';
-import { quickStats, sessionHistory, skillComparison, trend } from '../data/sessions';
+import { insights, recommendations } from '../data/sessions';
 import { useAuth } from '../contexts/AuthContext';
+import { useDashboardData } from '../hooks/useDashboardData';
 
 export function Dashboard() {
   const { user, logout } = useAuth();
   const [goalVisible, setGoalVisible] = useState(true);
-  const [sessions, setSessions] = useState(sessionHistory);
+  
+  const { sessions, trend, quickStats, skillComparison, isLoading, setSessions } = useDashboardData();
 
   const displayName = user?.first_name || user?.username || 'Communicator';
+
+  if (isLoading) {
+    return (
+      <main className="relative min-h-screen w-full bg-slate-950 flex items-center justify-center">
+        <div className="h-8 w-8 animate-spin rounded-full border-2 border-slate-500 border-t-white" aria-hidden="true" />
+      </main>
+    );
+  }
 
   return (
     <main className="relative min-h-screen w-full bg-slate-950 px-5 pb-20 pt-24 sm:px-8">

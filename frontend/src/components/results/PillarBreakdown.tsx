@@ -1,8 +1,9 @@
 import React from 'react';
 import { ScoreBar } from '../common/ScoreBar';
-import { pillars } from '../../data/results';
+import { useReport } from '../../contexts/ReportContext';
 
 export function PillarBreakdown() {
+  const { pillars } = useReport();
   return (
     <article className="rounded-2xl border border-slate-800/60 bg-slate-900 p-6">
       <p className="text-[11px] font-bold uppercase tracking-widest text-slate-500">

@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { SearchIcon } from 'lucide-react';
-import { transcript } from '../../data/results';
+import { useReport } from '../../contexts/ReportContext';
 
 function highlight(text: string, fillers: string[], query: string) {
   const terms = [...fillers];
@@ -32,6 +32,7 @@ function highlight(text: string, fillers: string[], query: string) {
 }
 
 export function TranscriptView() {
+  const { transcript } = useReport();
   const [query, setQuery] = useState('');
 
   const lines = useMemo(

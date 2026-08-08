@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { ChevronDownIcon } from 'lucide-react';
-import { cafBreakdown } from '../../data/results';
+import { useReport } from '../../contexts/ReportContext';
 import { toneColor } from '../common/ScoreBar';
 
 export function CafAccordion() {
-  const [open, setOpen] = useState<string | null>(cafBreakdown[0].label);
+  const { cafBreakdown } = useReport();
+  const [open, setOpen] = useState<string | null>(cafBreakdown[0]?.label || null);
 
   return (
     <article className="rounded-2xl border border-slate-800/60 bg-slate-900 p-6">
