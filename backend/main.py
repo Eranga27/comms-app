@@ -15,8 +15,9 @@ app = FastAPI(
     version="2.0.0",
 )
 
-# Hardened CORS policy for production
-allowed_origins = os.getenv("ALLOWED_ORIGINS", "http://localhost:3000,http://localhost:3001").split(",")
+# CORS: allow both local dev and production frontend
+frontend_url = os.getenv("FRONTEND_URL", "http://localhost:3000").rstrip("/")
+allowed_origins = [frontend_url, "http://localhost:3000", "http://localhost:3001"]
 
 app.add_middleware(
     CORSMiddleware,
@@ -35,5 +36,6 @@ async def root():
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
+    # reload=False in production to avoid spawning 2 processes (doubles RAM usage)
+    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=False)
 
