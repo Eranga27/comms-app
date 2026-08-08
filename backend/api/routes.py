@@ -297,9 +297,9 @@ import os
 from faster_whisper import WhisperModel
 
 # Global model initialization to keep it in memory
-# Using "base" to prevent CPU out-of-memory errors
-print("Loading Faster-Whisper Base model (This may take a minute on first run)...")
-whisper_model = WhisperModel("base", device="cpu", compute_type="int8")
+# Using "tiny" to prevent CPU out-of-memory (OOM 137) errors on Render free tier
+print("Loading Faster-Whisper Tiny model (This may take a minute on first run)...")
+whisper_model = WhisperModel("tiny", device="cpu", compute_type="int8")
 
 @router.post("/session/{session_id}/audio")
 async def process_session_audio(session_id: str, file: UploadFile = File(...), db: Session = Depends(get_db)):
