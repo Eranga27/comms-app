@@ -292,103 +292,18 @@ async def practice_session_websocket(websocket: WebSocket, session_id: str, db: 
                     
             asyncio.create_task(save_session())
 
-import os
-from faster_whisper import WhisperModel
-
-# Global model initialization to keep it in memory
-# Using "tiny" to prevent CPU out-of-memory (OOM 137) errors on Render free tier
-print("Loading Faster-Whisper Tiny model (This may take a minute on first run)...")
-whisper_model = WhisperModel("tiny", device="cpu", compute_type="int8", cpu_threads=1, num_workers=1)
-
 @router.post("/session/{session_id}/audio")
 async def process_session_audio(session_id: str, file: UploadFile = File(...), db: Session = Depends(get_db)):
     """
-    V2.0 Endpoint: Processes the raw .webm video/audio batch file using Local Faster-Whisper.
-    Zero API cost, full privacy, handles accents natively. Video is saved for playback.
+    Lightweight audio endpoint — accepts the session recording upload.
+    Transcription is handled client-side via the browser's Web Speech API.
+    The session report was already generated via WebSocket on disconnect.
     """
     try:
-        # Give the WebSocket disconnect task a second to generate the initial DB row
-        await asyncio.sleep(1.0)
-        
-        db_session = db.query(models.Session).filter(models.Session.id == session_id).first()
-        if not db_session:
-            print("Session not found in DB for audio processing.")
-            return {"status": "error", "message": "Session not found"}
-            
-        audio_bytes = await file.read()
-        
-        # Save to public directory for frontend to access as video playback
-        import os
-        media_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "frontend", "public", "sessions_media")
-        os.makedirs(media_dir, exist_ok=True)
-        file_path = os.path.join(media_dir, f"{session_id}.webm")
-        
-        with open(file_path, "wb") as f:
-            f.write(audio_bytes)
-            
-        try:
-            segments, info = await asyncio.to_thread(
-                whisper_model.transcribe,
-                file_path,
-                beam_size=5,
-                initial_prompt="um, uh, ah, ugh, like, you know, sort of, kinda, basically"
-            )
-            better_transcript = " ".join([segment.text for segment in segments])
-            
-            # 1. Count actual filler words from Faster-Whisper
-            transcript_lower = better_transcript.lower()
-            import re
-            filler_list = [" um", " uh", " ah", " ugh", " like", " you know", " sort of", " kinda", " basically"]
-            actual_fillers = sum(len(re.findall(r'\b' + f.strip() + r'\b', transcript_lower)) for f in filler_list)
-            
-            # 2. Recalculate CAF Assessment completely!
-            from core.assessment import generate_caf_assessment, get_communication_grade
-            caf_report = generate_caf_assessment(
-                transcript=better_transcript,
-                duration_seconds=db_session.duration_seconds,
-                filler_words=actual_fillers,
-                timeline_events=db_session.timeline_events or []
-            )
-            
-            # 3. Generate fresh Coaching Report
-            from core.coach import generate_coaching_report
-            report = await generate_coaching_report(
-                transcript=better_transcript,
-                duration=db_session.duration_seconds,
-                caf_report=caf_report,
-                timeline_events=db_session.timeline_events or [],
-                practice_context=db_session.practice_context or "Custom Practice"
-            )
-            
-            content_score = report.get("content_score", 15)
-            total_score = caf_report["technical_score"] + content_score
-            grade = get_communication_grade(total_score)
-            
-            report["overall_score"] = total_score
-            report["grade"] = grade
-            report["caf_breakdown"] = caf_report["categories"]
-            
-            # Update Database Model
-            db_session.transcript = better_transcript
-            db_session.filler_words_count = actual_fillers
-            db_session.speech_score = caf_report["categories"]["speech_delivery"]["total"]
-            db_session.facial_score = caf_report["categories"]["facial_communication"]["total"]
-            db_session.gesture_score = caf_report["categories"]["gesture_communication"]["total"]
-            db_session.posture_score = caf_report["categories"]["posture_presence"]["total"]
-            db_session.content_score = content_score
-            db_session.overall_score = total_score
-            db_session.communication_grade = grade
-            db_session.feedback_summary = json.dumps(report)
-            
-            db.commit()
-            print(f"Local Faster-Whisper transcript upgrade successful for {session_id}!")
-            
-        except Exception as api_err:
-            print(f"Faster-Whisper upgrade failed: {api_err}. Falling back to MVP transcript.")
-            
-        # DO NOT remove file_path, keep it for frontend playback!
-                
+        # Consume and discard the bytes so the client request completes cleanly
+        await file.read()
+        print(f"Audio upload received for session {session_id} (browser transcript already stored).")
         return {"status": "success"}
     except Exception as e:
-        print(f"Audio processing error: {e}")
+        print(f"Audio endpoint error: {e}")
         return {"status": "error"}
