@@ -128,6 +128,30 @@ export function usePracticeSession(): PracticeSessionApi {
       mediaPipeSetupRef.current = true;
       const w = window as any;
 
+      let latestHands: any = null;
+      let latestPose: any = null;
+
+      handsRef.current.onResults((results: any) => {
+        latestHands = results;
+        if (results.multiHandLandmarks && results.multiHandLandmarks.length > 0) {
+          (window as any).currentHandsDetected = true;
+        } else {
+          (window as any).currentHandsDetected = false;
+        }
+      });
+
+      poseRef.current.onResults((results: any) => {
+        latestPose = results;
+        if (results.poseLandmarks) {
+          const leftShoulder = results.poseLandmarks[11];
+          const rightShoulder = results.poseLandmarks[12];
+          const shoulderDiffY = leftShoulder && rightShoulder ? Math.abs(leftShoulder.y - rightShoulder.y) : 0;
+          (window as any).currentPostureScore = shoulderDiffY < 0.02 ? 1.0 : 0.0;
+        } else {
+          (window as any).currentPostureScore = 0.0;
+        }
+      });
+
       faceMeshRef.current.onResults((results: any) => {
         if (!canvasRef.current || !videoRef.current) return;
         const ctx = canvasRef.current.getContext('2d');
@@ -137,6 +161,22 @@ export function usePracticeSession(): PracticeSessionApi {
         ctx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
         ctx.drawImage(results.image, 0, 0, canvasRef.current.width, canvasRef.current.height);
         
+        // Draw live tracking telemetry
+        const drawOpts = { color: 'rgba(45, 212, 191, 0.4)', lineWidth: 0.5 };
+        if (results.multiFaceLandmarks && results.multiFaceLandmarks.length > 0) {
+          for (const landmarks of results.multiFaceLandmarks) {
+            w.drawConnectors(ctx, landmarks, w.FACEMESH_TESSELATION, drawOpts);
+          }
+        }
+        if (latestPose && latestPose.poseLandmarks) {
+          w.drawConnectors(ctx, latestPose.poseLandmarks, w.POSE_CONNECTIONS, { color: 'rgba(139, 92, 246, 0.5)', lineWidth: 1.5 });
+        }
+        if (latestHands && latestHands.multiHandLandmarks) {
+          for (const landmarks of latestHands.multiHandLandmarks) {
+            w.drawConnectors(ctx, landmarks, w.HAND_CONNECTIONS, { color: 'rgba(245, 158, 11, 0.5)', lineWidth: 1 });
+          }
+        }
+
         if (results.multiFaceLandmarks && results.multiFaceLandmarks.length > 0) {
           const landmarks = results.multiFaceLandmarks[0];
           const nose = landmarks[1];
@@ -166,25 +206,6 @@ export function usePracticeSession(): PracticeSessionApi {
           setEyeContact(0);
         }
         ctx.restore();
-      });
-
-      handsRef.current.onResults((results: any) => {
-        if (results.multiHandLandmarks && results.multiHandLandmarks.length > 0) {
-          (window as any).currentHandsDetected = true;
-        } else {
-          (window as any).currentHandsDetected = false;
-        }
-      });
-
-      poseRef.current.onResults((results: any) => {
-        if (results.poseLandmarks) {
-          const leftShoulder = results.poseLandmarks[11];
-          const rightShoulder = results.poseLandmarks[12];
-          const shoulderDiffY = leftShoulder && rightShoulder ? Math.abs(leftShoulder.y - rightShoulder.y) : 0;
-          (window as any).currentPostureScore = shoulderDiffY < 0.02 ? 1.0 : 0.0;
-        } else {
-          (window as any).currentPostureScore = 0.0;
-        }
       });
 
       let lastProcessedTime = 0;
@@ -354,7 +375,6 @@ export function usePracticeSession(): PracticeSessionApi {
   const stop = useCallback(() => {
     if (!isRecordingRef.current) return;
     
-    setIsRecording(false);
     isRecordingRef.current = false;
     setToast(null);
     setState('processing');

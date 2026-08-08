@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { FocusMode, PracticeGoal, SessionState } from '../../types';
-import { TrackingOverlay } from './TrackingOverlay';
+
 import { formatClock } from '../../hooks/usePracticeSession';
 
 interface CameraStageProps {
@@ -63,7 +63,7 @@ export function CameraStage({
           className="absolute inset-0 h-full w-full object-cover"
           style={{ transform: 'scaleX(-1)' }} />
         
-        {mode === 'analyst' && !booting && <TrackingOverlay />}
+        {/* TrackingOverlay removed in favor of live canvas drawing */}
 
         {booting &&
         <div className="absolute inset-0 flex flex-col items-center justify-center gap-5 bg-slate-950/80 backdrop-blur-sm">
