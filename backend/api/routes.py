@@ -6,7 +6,6 @@ import asyncio
 import random
 import time
 
-from core.vision import vision_analyzer
 from core.coach import generate_coaching_report
 from core.database import get_db
 import core.models as models
@@ -299,7 +298,7 @@ from faster_whisper import WhisperModel
 # Global model initialization to keep it in memory
 # Using "tiny" to prevent CPU out-of-memory (OOM 137) errors on Render free tier
 print("Loading Faster-Whisper Tiny model (This may take a minute on first run)...")
-whisper_model = WhisperModel("tiny", device="cpu", compute_type="int8")
+whisper_model = WhisperModel("tiny", device="cpu", compute_type="int8", cpu_threads=1, num_workers=1)
 
 @router.post("/session/{session_id}/audio")
 async def process_session_audio(session_id: str, file: UploadFile = File(...), db: Session = Depends(get_db)):
