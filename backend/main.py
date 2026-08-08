@@ -6,8 +6,12 @@ from api.auth import router as auth_router
 from core.database import engine, Base
 import core.models  # Ensures models are registered before create_all
 
-# Create DB tables
-Base.metadata.create_all(bind=engine)
+# Create DB tables (wrapped so a connection hiccup doesn't crash startup)
+try:
+    Base.metadata.create_all(bind=engine)
+    print("Database tables verified/created successfully.")
+except Exception as e:
+    print(f"WARNING: Could not create DB tables on startup: {e}")
 
 app = FastAPI(
     title="Eloquent One Communication Coach API",
