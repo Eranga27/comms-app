@@ -12,7 +12,10 @@ export function useDashboardData() {
   useEffect(() => {
     async function fetchSessions() {
       try {
-        const res = await fetch(`${API_URL}/api/sessions`);
+        const token = localStorage.getItem('eloquent_token');
+        const res = await fetch(`${API_URL}/api/sessions`, {
+          headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+        });
         if (!res.ok) throw new Error('Failed to fetch sessions');
         const data = await res.json();
         

@@ -12,9 +12,15 @@ export function useSessionReport(sessionId: string | undefined) {
       return;
     }
 
-    async function fetchSession() {
+    async function fetchSession(retries = 15) {
       try {
         const res = await fetch(`${API_URL}/api/session/${sessionId}`);
+        
+        if (res.status === 404 && retries > 0) {
+          setTimeout(() => fetchSession(retries - 1), 2000);
+          return;
+        }
+        
         if (!res.ok) throw new Error('Failed to fetch session report');
         const dbSession = await res.json();
         
@@ -26,7 +32,7 @@ export function useSessionReport(sessionId: string | undefined) {
             id: dbSession.id,
             name: dbSession.session_label || 'Practice Session',
             context: dbSession.practice_context || 'General',
-            date: new Date().toLocaleDateString(), // No timestamp returned from this endpoint natively, placeholder
+            date: new Date().toLocaleDateString(), 
             duration: `${Math.floor(dbSession.duration_seconds / 60)}:${String(dbSession.duration_seconds % 60).padStart(2, '0')}`,
             grade: dbSession.communication_grade || 'C',
             gradeLabel: 'Evaluated Communicator',
@@ -58,7 +64,7 @@ export function useSessionReport(sessionId: string | undefined) {
             {
               label: 'Speech Analysis', emoji: '🗣️', metrics: [
                 { label: 'Pace', value: `${feedback.wpm || 140} WPM`, percent: 75 },
-                { label: 'Filler Words', value: `${dbSession.filler_words_count || 0}`, percent: 100 - Math.min(100, (dbSession.filler_words_count || 0) * 5) }
+                { label: 'Filler Words', value: `${dbSession.filler_words_count || 0}`, percent: Math.max(0, 100 - (dbSession.filler_words_count || 0) * 5) }
               ]
             },
             {
@@ -71,10 +77,14 @@ export function useSessionReport(sessionId: string | undefined) {
         };
 
         setData(formatted);
+        setIsLoading(false);
       } catch (err) {
+        if (retries > 0) {
+          setTimeout(() => fetchSession(retries - 1), 2000);
+          return;
+        }
         console.error(err);
         setError('Could not load session data');
-      } finally {
         setIsLoading(false);
       }
     }

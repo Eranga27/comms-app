@@ -1,14 +1,29 @@
-from fastapi import APIRouter, WebSocket, WebSocketDisconnect, Depends, HTTPException, UploadFile, File
+from fastapi import APIRouter, WebSocket, WebSocketDisconnect, Depends, HTTPException, UploadFile, File, Query, Request
 from sqlalchemy.orm import Session
-from typing import Dict
+from typing import Dict, Optional
 import json
 import asyncio
 import random
 import time
+import jwt
+import os
 
 from core.coach import generate_coaching_report
 from core.database import get_db
 import core.models as models
+
+JWT_SECRET = os.getenv("JWT_SECRET_KEY", "eloquent_one_super_secret_key_change_me_in_prod")
+
+def _user_id_from_token(token: str) -> Optional[int]:
+    """Returns user id from a JWT token string, or None if invalid."""
+    if not token:
+        return None
+    try:
+        payload = jwt.decode(token, JWT_SECRET, algorithms=["HS256"])
+        sub = payload.get("sub")
+        return int(sub) if sub else None
+    except Exception:
+        return None
 
 router = APIRouter()
 
@@ -20,8 +35,17 @@ async def health_check():
     return {"status": "ok"}
 
 @router.get("/sessions")
-def get_all_sessions(db: Session = Depends(get_db)):
-    db_sessions = db.query(models.Session).order_by(models.Session.created_at.desc()).all()
+def get_all_sessions(request: Request, db: Session = Depends(get_db)):
+    """Return sessions for the authenticated user only (filtered by JWT token)."""
+    auth_header = request.headers.get("Authorization", "")
+    token = auth_header.replace("Bearer ", "").strip() if auth_header.startswith("Bearer ") else ""
+    user_id = _user_id_from_token(token)
+
+    query = db.query(models.Session)
+    if user_id:
+        query = query.filter(models.Session.user_id == user_id)
+    
+    db_sessions = query.order_by(models.Session.created_at.desc()).all()
     return [{
         "id": s.id,
         "timestamp": s.created_at.isoformat() if s.created_at else None,
@@ -85,9 +109,16 @@ def delete_session(session_id: str, db: Session = Depends(get_db)):
     return {"status": "success"}
 
 @router.websocket("/ws/session/{session_id}")
-async def practice_session_websocket(websocket: WebSocket, session_id: str, db: Session = Depends(get_db)):
+async def practice_session_websocket(
+    websocket: WebSocket,
+    session_id: str,
+    token: str = Query(default=""),
+    db: Session = Depends(get_db)
+):
     await websocket.accept()
     active_sessions[session_id] = websocket
+    
+    user_id = _user_id_from_token(token)
     
     # Initialize session state
     session_state[session_id] = {
@@ -98,7 +129,8 @@ async def practice_session_websocket(websocket: WebSocket, session_id: str, db: 
         "timeline_events": [],
         "behavioral_flags": set(),
         "session_label": "Practice Session",
-        "practice_context": "Custom Practice"
+        "practice_context": "Custom Practice",
+        "user_id": user_id
     }
     
     print(f"Session {session_id} connected via WebSocket.")
@@ -265,6 +297,7 @@ async def practice_session_websocket(websocket: WebSocket, session_id: str, db: 
                 # 4. Save to Database
                 db_session = models.Session(
                     id=session_id,
+                    user_id=state.get("user_id"),
                     session_label=state.get("session_label", "Practice Session"),
                     practice_context=state.get("practice_context", "Custom Practice"),
                     duration_seconds=duration,

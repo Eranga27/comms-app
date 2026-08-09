@@ -27,8 +27,9 @@ export function Results() {
 
   if (isLoading) {
     return (
-      <main className="relative min-h-screen w-full bg-slate-950 flex items-center justify-center">
+      <main className="relative min-h-screen w-full bg-slate-950 flex flex-col items-center justify-center gap-4">
         <div className="h-8 w-8 animate-spin rounded-full border-2 border-slate-500 border-t-white" aria-hidden="true" />
+        <p className="text-slate-400 font-medium animate-pulse">AI Coach is analyzing your communication...</p>
       </main>
     );
   }

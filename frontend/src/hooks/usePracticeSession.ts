@@ -246,8 +246,8 @@ export function usePracticeSession(): PracticeSessionApi {
     const sessionId = Math.random().toString(36).substring(7);
     sessionIdRef.current = sessionId;
     
-    // Default ws logic
-    const ws = new WebSocket(`${WS_URL}/api/ws/session/${sessionId}`);
+    const token = localStorage.getItem('eloquent_token') || '';
+    const ws = new WebSocket(`${WS_URL}/api/ws/session/${sessionId}?token=${token}`);
     wsRef.current = ws;
 
     ws.onopen = async () => {

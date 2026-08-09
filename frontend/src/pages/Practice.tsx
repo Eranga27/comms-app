@@ -5,7 +5,6 @@ import { AmbientGlow } from '../components/common/AmbientGlow';
 import { CameraStage } from '../components/practice/CameraStage';
 import { CoachingHistory } from '../components/practice/CoachingHistory';
 import { CoachingToast } from '../components/practice/CoachingToast';
-import { FocusModeSelector } from '../components/practice/FocusModeSelector';
 import { ProcessingOverlay } from '../components/practice/ProcessingOverlay';
 import { SetupModal, SessionSetup } from '../components/practice/SetupModal';
 import { TranscriptPanel } from '../components/practice/TranscriptPanel';
@@ -16,14 +15,15 @@ import { FocusMode } from '../types';
 export function Practice() {
   const navigate = useNavigate();
   const [setup, setSetup] = useState<SessionSetup | null>(null);
-  const [mode, setMode] = useState<FocusMode>('professional');
+  const [mode] = useState<FocusMode>('analyst');
+  const [showTelemetry, setShowTelemetry] = useState(true);
   const session = usePracticeSession();
 
   const goal = practiceGoals.find((g) => g.id === setup?.goalId) ?? practiceGoals[0];
-  const showSidebar = mode !== 'beginner';
+  const isAudioLow = session.volumeBars.reduce((a, b) => a + b, 0) / session.volumeBars.length < 15;
 
   const handleProcessed = useCallback(() => {
-    navigate('/v2/results/sess-108');
+    // The session hook drives navigation on its own after stop() — this fallback is no longer needed.
   }, [navigate]);
 
   return (
@@ -44,10 +44,9 @@ export function Practice() {
               {setup ? ` · ${setup.name}` : ''}
             </p>
           </div>
-          <FocusModeSelector value={mode} onChange={setMode} />
         </header>
 
-        <div className={`grid gap-5 ${showSidebar ? 'lg:grid-cols-[1fr_320px]' : ''}`}>
+        <div className="grid gap-5 lg:grid-cols-[1fr_320px]">
           <div className="space-y-5">
             <CameraStage
               videoRef={session.videoRef}
@@ -61,17 +60,16 @@ export function Practice() {
               eyeContact={session.eyeContact}
               volumeBars={session.volumeBars}
               goal={goal}
+              showTelemetry={showTelemetry}
+              onToggleTelemetry={() => setShowTelemetry(!showTelemetry)}
               onStart={session.start}
               onStop={session.stop}
               onCancel={session.cancel} />
             
 
-            {showSidebar &&
-            <TranscriptPanel transcript={session.transcript} recording={session.state === 'recording'} />
-            }
+            <TranscriptPanel transcript={session.transcript} recording={session.state === 'recording'} isAudioLow={isAudioLow} />
           </div>
 
-          {showSidebar &&
           <div className="space-y-5">
               <CoachingHistory notes={session.notes} />
               <div className="rounded-2xl border border-primary-500/15 bg-primary-500/5 p-5">
@@ -84,7 +82,6 @@ export function Practice() {
                 <p className="mt-3 font-mono text-[11px] text-slate-500">Tracking: {goal.metric}</p>
               </div>
             </div>
-          }
         </div>
       </div>
 

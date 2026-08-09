@@ -16,6 +16,8 @@ interface CameraStageProps {
   eyeContact: number;
   volumeBars: number[];
   goal: PracticeGoal;
+  showTelemetry: boolean;
+  onToggleTelemetry: () => void;
   onStart: () => void;
   onStop: () => void;
   onCancel: () => void;
@@ -40,6 +42,8 @@ export function CameraStage({
   eyeContact,
   volumeBars,
   goal,
+  showTelemetry,
+  onToggleTelemetry,
   onStart,
   onStop,
   onCancel
@@ -60,15 +64,16 @@ export function CameraStage({
           
         <canvas
           ref={canvasRef}
-          className="absolute inset-0 h-full w-full object-cover"
+          className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-300 ${showTelemetry ? 'opacity-100' : 'opacity-0'}`}
           style={{ transform: 'scaleX(-1)' }} />
         
         {/* TrackingOverlay removed in favor of live canvas drawing */}
 
         {booting &&
-        <div className="absolute inset-0 flex flex-col items-center justify-center gap-5 bg-slate-950/80 backdrop-blur-sm">
+        <div className="absolute inset-0 z-50 flex flex-col items-center justify-center gap-5 bg-slate-950/90 backdrop-blur-md">
             <div className="h-12 w-12 animate-spin rounded-full border-4 border-slate-800 border-t-primary-500" />
-            <p className="text-[15px] text-slate-400">Initializing Camera &amp; Tracking Engine...</p>
+            <p className="text-[15px] text-slate-300 font-medium tracking-wide">Initializing AI Models...</p>
+            <p className="text-[12px] text-slate-500 text-center max-w-[280px]">Loading advanced face and gesture tracking engines. This may take up to 15 seconds.</p>
           </div>
         }
 
@@ -91,7 +96,13 @@ export function CameraStage({
 
         {/* Top-right HUD */}
         {mode === 'analyst' && !booting &&
-        <div className="absolute right-4 top-4 flex max-w-[60%] flex-wrap justify-end gap-1.5">
+        <div className="absolute right-4 top-4 flex max-w-[60%] flex-wrap justify-end gap-1.5 items-start">
+            <button
+              onClick={onToggleTelemetry}
+              className={`rounded-full border px-3 py-1 text-[10px] font-bold backdrop-blur-md transition-colors ${showTelemetry ? 'border-primary-500/50 bg-primary-500/20 text-primary-300' : 'border-slate-500/30 bg-slate-800/50 text-slate-400 hover:bg-slate-700/50'}`}
+            >
+              {showTelemetry ? 'Hide Mapping' : 'Show Mapping'}
+            </button>
             {statusChips.map((chip) =>
           <span
             key={chip.label}
