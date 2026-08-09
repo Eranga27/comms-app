@@ -174,32 +174,43 @@ def get_me(current_user: User = Depends(get_current_user)):
 # ── Google OAuth ──────────────────────────────────────────────────────────────
 
 @router.get("/google/login")
-def google_login():
+def google_login(request: Request):
+    frontend_url = request.headers.get("origin") or request.headers.get("referer", FRONTEND_URL).rstrip("/")
     if not GOOGLE_CLIENT_ID:
-        return RedirectResponse(f"{FRONTEND_URL}/?oauth_error=Google+OAuth+is+not+configured+yet.+Please+add+GOOGLE_CLIENT_ID+to+the+server+.env+file.")
+        return RedirectResponse(f"{frontend_url}/?oauth_error=Google+OAuth+is+not+configured+yet.+Please+add+GOOGLE_CLIENT_ID+to+the+server+.env+file.")
+    
+    backend_url = str(request.base_url).rstrip("/")
     params = (
         f"client_id={GOOGLE_CLIENT_ID}"
-        f"&redirect_uri={BACKEND_URL.rstrip('/')}/api/auth/google/callback"
+        f"&redirect_uri={backend_url}/api/auth/google/callback"
         "&response_type=code"
         "&scope=openid%20email%20profile"
         "&access_type=offline"
+        f"&state={frontend_url}" # Pass frontend URL as state so callback knows where to redirect
     )
     return RedirectResponse(f"https://accounts.google.com/o/oauth2/v2/auth?{params}")
 
 
 @router.get("/google/callback")
-async def google_callback(code: str, db: Session = Depends(get_db)):
+async def google_callback(request: Request, code: str, state: str = FRONTEND_URL, db: Session = Depends(get_db)):
+    frontend_url = state.rstrip("/")
     if not GOOGLE_CLIENT_ID or not GOOGLE_CLIENT_SECRET:
-        raise HTTPException(status_code=501, detail="Google OAuth not configured.")
+        return RedirectResponse(f"{frontend_url}/?oauth_error=Google+OAuth+is+not+fully+configured+on+the+server.")
+    
+    backend_url = str(request.base_url).rstrip("/")
     async with httpx.AsyncClient() as client:
         token_res = await client.post("https://oauth2.googleapis.com/token", data={
             "code": code,
             "client_id": GOOGLE_CLIENT_ID,
             "client_secret": GOOGLE_CLIENT_SECRET,
-            "redirect_uri": f"{BACKEND_URL.rstrip('/')}/api/auth/google/callback",
+            "redirect_uri": f"{backend_url}/api/auth/google/callback",
             "grant_type": "authorization_code",
         })
         token_data = token_res.json()
+        if "access_token" not in token_data:
+            error_msg = token_data.get("error_description") or token_data.get("error") or "Failed to get access token"
+            return RedirectResponse(f"{frontend_url}/?oauth_error=Google+OAuth+Error:+{error_msg}")
+            
         user_res = await client.get(
             "https://www.googleapis.com/oauth2/v3/userinfo",
             headers={"Authorization": f"Bearer {token_data['access_token']}"}
@@ -208,7 +219,9 @@ async def google_callback(code: str, db: Session = Depends(get_db)):
 
     email = user_info.get("email")
     google_id = user_info.get("sub")
-    first_name = user_info.get("given_name") or user_info.get("name", "").split()[0]
+    google_name = user_info.get("name") or ""
+    google_name_parts = google_name.split()
+    first_name = user_info.get("given_name") or (google_name_parts[0] if google_name_parts else "User")
 
     user = db.query(User).filter(User.email == email).first()
     if not user:
@@ -230,27 +243,32 @@ async def google_callback(code: str, db: Session = Depends(get_db)):
         db.commit()
 
     access_token = create_access_token(data={"sub": str(user.id)})
-    return RedirectResponse(f"{FRONTEND_URL}/?token={access_token}")
+    return RedirectResponse(f"{frontend_url}/?token={access_token}")
 
 
 # ── GitHub OAuth ──────────────────────────────────────────────────────────────
 
 @router.get("/github/login")
-def github_login():
+def github_login(request: Request):
+    frontend_url = request.headers.get("origin") or request.headers.get("referer", FRONTEND_URL).rstrip("/")
     if not GITHUB_CLIENT_ID:
-        return RedirectResponse(f"{FRONTEND_URL}/?oauth_error=GitHub+OAuth+is+not+configured+yet.+Please+add+GITHUB_CLIENT_ID+to+the+server+.env+file.")
+        return RedirectResponse(f"{frontend_url}/?oauth_error=GitHub+OAuth+is+not+configured+yet.+Please+add+GITHUB_CLIENT_ID+to+the+server+.env+file.")
+    
+    backend_url = str(request.base_url).rstrip("/")
     params = (
         f"client_id={GITHUB_CLIENT_ID}"
-        f"&redirect_uri={BACKEND_URL.rstrip('/')}/api/auth/github/callback"
+        f"&redirect_uri={backend_url}/api/auth/github/callback"
         "&scope=user:email"
+        f"&state={frontend_url}"
     )
     return RedirectResponse(f"https://github.com/login/oauth/authorize?{params}")
 
 
 @router.get("/github/callback")
-async def github_callback(code: str, db: Session = Depends(get_db)):
+async def github_callback(request: Request, code: str, state: str = FRONTEND_URL, db: Session = Depends(get_db)):
+    frontend_url = state.rstrip("/")
     if not GITHUB_CLIENT_ID or not GITHUB_CLIENT_SECRET:
-        raise HTTPException(status_code=501, detail="GitHub OAuth not configured.")
+        return RedirectResponse(f"{frontend_url}/?oauth_error=GitHub+OAuth+is+not+fully+configured+on+the+server.")
     async with httpx.AsyncClient() as client:
         token_res = await client.post(
             "https://github.com/login/oauth/access_token",
@@ -259,6 +277,9 @@ async def github_callback(code: str, db: Session = Depends(get_db)):
         )
         token_data = token_res.json()
         access = token_data.get("access_token", "")
+        if not access:
+            error_msg = token_data.get("error_description") or token_data.get("error") or "Failed to get access token"
+            return RedirectResponse(f"{frontend_url}/?oauth_error=GitHub+OAuth+Error:+{error_msg}")
 
         user_res = await client.get(
             "https://api.github.com/user",
@@ -274,7 +295,9 @@ async def github_callback(code: str, db: Session = Depends(get_db)):
 
     primary_email = next((e["email"] for e in emails if e.get("primary")), None)
     github_id = str(user_info.get("id"))
-    first_name = (user_info.get("name") or "").split()[0] or user_info.get("login", "")
+    github_name = user_info.get("name") or ""
+    github_name_parts = github_name.split()
+    first_name = (github_name_parts[0] if github_name_parts else user_info.get("login", "User"))
 
     user = db.query(User).filter(User.email == primary_email).first()
     if not user:
@@ -291,4 +314,4 @@ async def github_callback(code: str, db: Session = Depends(get_db)):
         db.refresh(user)
 
     jwt_token = create_access_token(data={"sub": str(user.id)})
-    return RedirectResponse(f"{FRONTEND_URL}/?token={jwt_token}")
+    return RedirectResponse(f"{frontend_url}/?token={jwt_token}")
