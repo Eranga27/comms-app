@@ -13,7 +13,7 @@ export function AudienceGrid() {
           subtitle="Whoever you speak to, the goal is the same — be understood, and be remembered." />
         
 
-        <div className="mt-14 grid grid-cols-2 gap-4 lg:grid-cols-4">
+        <div className="mt-14 grid grid-cols-1 sm:grid-cols-2 gap-4 lg:grid-cols-4">
           {audiences.map((a, i) =>
           <motion.article
             key={a.title}
