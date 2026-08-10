@@ -11,7 +11,7 @@ import { FadeIn } from '../components/common/FadeIn';
 
 export function Landing() {
   return (
-    <main className="w-full bg-slate-950">
+    <main className="w-full">
       <Hero />
       <FadeIn delay={0.2}><DemoPreview /></FadeIn>
       <FadeIn><HowItWorks /></FadeIn>

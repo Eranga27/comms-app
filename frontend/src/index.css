@@ -37,29 +37,25 @@ body {
   background-image: url('/background designs/BGDark.png');
   background-size: cover;
   background-position: center top;
-  /* Screen blend lets the vivid purples/blues bleed through the dark base
-     without creating harsh contrast against slate-900 cards */
-  mix-blend-mode: screen;
-  /* 18% opacity — visible enough to feel intentional, subtle enough to
-     never compete with card content or text */
-  opacity: 0.18;
+  /* 30% opacity — the butterflies and glows are clearly visible
+     but never overpower the dark slate UI components above */
+  opacity: 0.30;
   animation: bg-fade-in 1.8s ease-out forwards;
   pointer-events: none;
 }
 
-/* Dark vignette gradient sits between the image and page content.
-   Keeps the centre of the screen darkest (where most content lives)
-   and lets the design bleed naturally at the edges. */
+/* Vignette: dark centre (where most content sits), lighter at corners
+   so the design bleeds in from the edges naturally */
 .global-bg-vignette {
   position: fixed;
   inset: 0;
   z-index: -1;
   background:
     radial-gradient(
-      ellipse 80% 60% at 50% 0%,
-      rgba(2, 6, 23, 0) 0%,
-      rgba(2, 6, 23, 0.55) 60%,
-      rgba(2, 6, 23, 0.85) 100%
+      ellipse 100% 80% at 50% 50%,
+      rgba(2, 6, 23, 0.70) 0%,
+      rgba(2, 6, 23, 0.40) 60%,
+      rgba(2, 6, 23, 0.10) 100%
     );
   pointer-events: none;
 }

@@ -12,7 +12,7 @@ export function Settings() {
   const [deleted, setDeleted] = useState(false);
 
   return (
-    <main className="relative min-h-screen w-full bg-slate-950 px-5 pb-20 pt-24 sm:px-8">
+    <main className="relative min-h-screen w-full px-5 pb-20 pt-24 sm:px-8">
       <AmbientGlow />
 
       <div className="relative mx-auto max-w-2xl space-y-5">

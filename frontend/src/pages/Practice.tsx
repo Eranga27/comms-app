@@ -54,7 +54,7 @@ export function Practice() {
   };
 
   return (
-    <main className="relative min-h-screen w-full bg-slate-950 px-5 py-8 sm:px-8 sm:py-12">
+    <main className="relative min-h-screen w-full px-5 py-8 sm:px-8 sm:py-12">
       <AmbientGlow />
 
       <div className="relative mx-auto max-w-7xl">

@@ -35,7 +35,7 @@ export function Results() {
 
   if (isLoading) {
     return (
-      <main className="relative min-h-screen w-full bg-slate-950 flex flex-col items-center justify-center gap-4">
+      <main className="relative min-h-screen w-full flex flex-col items-center justify-center gap-4">
         <div className="h-8 w-8 animate-spin rounded-full border-2 border-slate-500 border-t-white" aria-hidden="true" />
         <p className="text-slate-400 font-medium animate-pulse">AI Coach is analyzing your communication...</p>
         <p className="text-[13px] text-slate-600">This can take up to 30 seconds</p>
@@ -45,7 +45,7 @@ export function Results() {
 
   if (error || !data) {
     return (
-      <main className="relative min-h-screen w-full bg-slate-950 flex flex-col items-center justify-center text-white gap-4">
+      <main className="relative min-h-screen w-full flex flex-col items-center justify-center text-white gap-4">
         <p className="text-slate-400">Could not load session results.</p>
         <Link to="/v2/dashboard" className="text-primary-400 hover:text-primary-300">
           Return to Dashboard
@@ -61,7 +61,7 @@ export function Results() {
 
   return (
     <ReportContext.Provider value={data}>
-      <main className="relative min-h-screen w-full bg-slate-950 px-5 pb-20 pt-24 sm:px-8">
+      <main className="relative min-h-screen w-full px-5 pb-20 pt-24 sm:px-8">
         <AmbientGlow />
 
         <div className="relative mx-auto max-w-6xl space-y-5">

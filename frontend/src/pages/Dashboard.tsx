@@ -39,14 +39,14 @@ export function Dashboard() {
 
   if (isLoading) {
     return (
-      <main className="relative min-h-screen w-full bg-slate-950 flex items-center justify-center">
+      <main className="relative min-h-screen w-full flex items-center justify-center">
         <div className="h-8 w-8 animate-spin rounded-full border-2 border-slate-500 border-t-white" aria-hidden="true" />
       </main>
     );
   }
 
   return (
-    <main className="relative min-h-screen w-full bg-slate-950 px-5 pb-20 pt-24 sm:px-8">
+    <main className="relative min-h-screen w-full px-5 pb-20 pt-24 sm:px-8">
       <AmbientGlow />
 
       <div className="relative mx-auto max-w-7xl">

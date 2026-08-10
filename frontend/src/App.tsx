@@ -17,7 +17,7 @@ function Shell() {
   const hideNav = location.pathname.startsWith('/v2/practice');
 
   return (
-    <div className="min-h-screen w-full bg-slate-950 flex flex-col">
+    <div className="min-h-screen w-full flex flex-col">
       <GlobalBackground />
       {!hideNav && <Navbar />}
       <AuthModal />
