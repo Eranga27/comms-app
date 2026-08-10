@@ -99,7 +99,7 @@ def delete_session(session_id: str, db: Session = Depends(get_db)):
     
     # Try to delete associated video file
     import os
-    media_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "frontend", "public", "sessions_media", f"{session_id}.webm")
+    media_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "media", f"{session_id}.webm")
     if os.path.exists(media_path):
         try:
             os.remove(media_path)
@@ -338,9 +338,8 @@ async def process_session_audio(session_id: str, file: UploadFile = File(...), d
     try:
         contents = await file.read()
         if contents:
-            # Save to frontend/public/sessions_media so the static server can serve it
-            base_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-            media_dir = os.path.join(base_dir, "frontend", "public", "sessions_media")
+            base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+            media_dir = os.path.join(base_dir, "media")
             os.makedirs(media_dir, exist_ok=True)
             save_path = os.path.join(media_dir, f"{session_id}.webm")
             with open(save_path, "wb") as f:

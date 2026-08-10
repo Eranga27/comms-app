@@ -5,6 +5,10 @@ from api.routes import router as api_router
 from api.auth import router as auth_router
 from core.database import engine, Base
 import core.models  # Ensures models are registered before create_all
+from fastapi.staticfiles import StaticFiles
+
+media_dir = os.path.join(os.path.dirname(__file__), "media")
+os.makedirs(media_dir, exist_ok=True)
 
 # Create DB tables (wrapped so a connection hiccup doesn't crash startup)
 try:
@@ -33,6 +37,8 @@ app.add_middleware(
 
 app.include_router(auth_router, prefix="/api")
 app.include_router(api_router, prefix="/api")
+
+app.mount("/sessions_media", StaticFiles(directory=media_dir), name="media")
 
 @app.get("/")
 async def root():

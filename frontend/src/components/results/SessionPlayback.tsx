@@ -2,6 +2,8 @@ import React, { useRef, useState, useEffect } from 'react';
 import { PauseIcon, PlayIcon, RotateCcwIcon, VideoOffIcon } from 'lucide-react';
 import { useReport } from '../../contexts/ReportContext';
 
+import { API_URL } from '../../config';
+
 export function SessionPlayback() {
   const { sessionReport } = useReport();
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -11,7 +13,7 @@ export function SessionPlayback() {
   const [hasVideo, setHasVideo] = useState(true);
   const [duration, setDuration] = useState(0);
 
-  const videoSrc = `/sessions_media/${sessionReport.id}.webm`;
+  const videoSrc = `${API_URL}/sessions_media/${sessionReport.id}.webm`;
 
   useEffect(() => {
     const el = videoRef.current;
