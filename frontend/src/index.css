@@ -17,6 +17,10 @@ body,
 }
 body {
   background-color: #020617;
+  background-image: url('/background designs/BGDark.png');
+  background-size: cover;
+  background-attachment: fixed;
+  background-position: center;
   color: #f8fafc;
   font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
