@@ -5,6 +5,7 @@ import { practiceContexts, practiceGoals } from '../../data/practice';
 
 export interface SessionSetup {
   contextId: string;
+  context: string;
   name: string;
   goalId: string;
 }
@@ -138,6 +139,7 @@ export function SetupModal({ onComplete }: SetupModalProps) {
               onClick={() =>
               onComplete({
                 contextId,
+                context: practiceContexts.find(c => c.id === contextId)?.label || contextId,
                 name: name.trim() || 'Untitled Practice Session',
                 goalId
               })

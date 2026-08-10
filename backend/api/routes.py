@@ -44,6 +44,8 @@ def get_all_sessions(request: Request, db: Session = Depends(get_db)):
     query = db.query(models.Session)
     if user_id:
         query = query.filter(models.Session.user_id == user_id)
+    else:
+        return []
     
     db_sessions = query.order_by(models.Session.created_at.desc()).all()
     return [{
@@ -207,7 +209,7 @@ async def practice_session_websocket(
                         
                         import re
                         text = chunk.lower()
-                        fillers = ["um", "uh", "ah", "like", "basically"]
+                        fillers = ["um", "uh", "ah", "like", "basically", "actually", "literally"]
                         found_fillers = []
                         currentTime = payload.get("timestamp", 0)
                         
@@ -219,12 +221,13 @@ async def practice_session_websocket(
                                 for _ in range(len(matches)):
                                     session_state[session_id]["timeline_events"].append({"time": currentTime, "event": "filler_word", "value": f})
                                 
-                        if "you know" in text:
-                            found_fillers.append("you know")
-                            count = text.count("you know")
-                            session_state[session_id]["filler_words_count"] += count
-                            for _ in range(count):
-                                session_state[session_id]["timeline_events"].append({"time": currentTime, "event": "filler_word", "value": "you know"})
+                        for phrase in ["you know", "i mean", "sort of", "kind of"]:
+                            if phrase in text:
+                                found_fillers.append(phrase)
+                                count = text.count(phrase)
+                                session_state[session_id]["filler_words_count"] += count
+                                for _ in range(count):
+                                    session_state[session_id]["timeline_events"].append({"time": currentTime, "event": "filler_word", "value": phrase})
                         
                         if found_fillers:
                             await websocket.send_json({
@@ -240,9 +243,10 @@ async def practice_session_websocket(
                         import re
                         text = final_text.lower()
                         total_fillers = 0
-                        for f in ["um", "uh", "ah", "like", "basically"]:
+                        for f in ["um", "uh", "ah", "like", "basically", "actually", "literally"]:
                             total_fillers += len(re.findall(rf'\b{f}\b', text))
-                        total_fillers += text.count("you know")
+                        for phrase in ["you know", "i mean", "sort of", "kind of"]:
+                            total_fillers += text.count(phrase)
                         session_state[session_id]["filler_words_count"] = total_fillers
 
             except json.JSONDecodeError:
@@ -328,15 +332,23 @@ async def practice_session_websocket(
 @router.post("/session/{session_id}/audio")
 async def process_session_audio(session_id: str, file: UploadFile = File(...), db: Session = Depends(get_db)):
     """
-    Lightweight audio endpoint — accepts the session recording upload.
-    Transcription is handled client-side via the browser's Web Speech API.
-    The session report was already generated via WebSocket on disconnect.
+    Save the canvas-recorded webm to disk so the Results page can play it back.
+    The session report was already generated asynchronously via WebSocket on disconnect.
     """
     try:
-        # Consume and discard the bytes so the client request completes cleanly
-        await file.read()
-        print(f"Audio upload received for session {session_id} (browser transcript already stored).")
+        contents = await file.read()
+        if contents:
+            # Save to frontend/public/sessions_media so the static server can serve it
+            base_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+            media_dir = os.path.join(base_dir, "frontend", "public", "sessions_media")
+            os.makedirs(media_dir, exist_ok=True)
+            save_path = os.path.join(media_dir, f"{session_id}.webm")
+            with open(save_path, "wb") as f:
+                f.write(contents)
+            print(f"Session video saved: {save_path} ({len(contents)} bytes)")
+        else:
+            print(f"Empty video upload for session {session_id}, skipping save.")
         return {"status": "success"}
     except Exception as e:
         print(f"Audio endpoint error: {e}")
-        return {"status": "error"}
+        return {"status": "error", "detail": str(e)}

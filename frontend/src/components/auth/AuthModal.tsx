@@ -470,6 +470,15 @@ export function AuthModal() {
                   {isLogin ? 'Sign up' : 'Log in'}
                 </button>
               </p>
+
+              <div className="mt-4 pt-4 border-t border-slate-800">
+                <button
+                  onClick={() => { setShowAuthModal(false); resetToAuth(); }}
+                  className="w-full text-center text-sm text-slate-500 hover:text-slate-300 transition-colors py-2"
+                >
+                  Try it Out — 1 free session, no account needed
+                </button>
+              </div>
             </>
             )}
           </div>

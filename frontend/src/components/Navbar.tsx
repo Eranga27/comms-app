@@ -75,11 +75,20 @@ export function Navbar() {
 
           <div className="flex items-center gap-4">
             {!user ? (
-              <button
-                onClick={() => setShowAuthModal(true)}
-                className="hidden rounded-full bg-white px-5 py-2.5 text-sm font-bold text-slate-950 shadow-lg shadow-white/5 transition-transform duration-300 hover:scale-105 sm:inline-flex">
-                Start Practising
-              </button>
+              <div className="hidden items-center gap-2 sm:flex">
+                <a
+                  href="/v2/practice"
+                  className="rounded-lg px-3 py-2 text-sm font-medium text-slate-400 transition-colors hover:text-white"
+                >
+                  Try it Out
+                </a>
+                <button
+                  onClick={() => setShowAuthModal(true)}
+                  className="rounded-full bg-white px-5 py-2.5 text-sm font-bold text-slate-950 shadow-lg shadow-white/5 transition-transform duration-300 hover:scale-105"
+                >
+                  Sign In
+                </button>
+              </div>
             ) : (
               <div className="hidden items-center gap-4 sm:flex">
                 <span className="text-sm font-medium text-slate-300">

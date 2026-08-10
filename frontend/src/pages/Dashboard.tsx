@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { PlusIcon, LogOutIcon } from 'lucide-react';
+import { PlusIcon, ChevronLeftIcon } from 'lucide-react';
 import { AmbientGlow } from '../components/common/AmbientGlow';
 import { FadeIn } from '../components/common/FadeIn';
 import { ActiveGoalBanner } from '../components/dashboard/ActiveGoalBanner';
@@ -36,6 +36,11 @@ export function Dashboard() {
       <AmbientGlow />
 
       <div className="relative mx-auto max-w-7xl">
+        <Link to="/" className="inline-flex items-center gap-1.5 text-[13px] text-slate-600 hover:text-slate-400 transition-colors mb-6">
+          <ChevronLeftIcon className="h-3.5 w-3.5" />
+          Home
+        </Link>
+
         <header className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <p className="text-[11px] font-bold uppercase tracking-widest text-primary-400">
@@ -57,7 +62,28 @@ export function Dashboard() {
           </Link>
         </header>
 
-        {goalVisible &&
+        {sessions.length === 0 ? (
+          <FadeIn delay={0.1}>
+            <div className="mt-12 flex flex-col items-center justify-center rounded-3xl border border-slate-800/60 bg-slate-900/50 py-24 px-6 text-center backdrop-blur-sm">
+              <div className="mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-slate-800">
+                <span className="text-4xl" aria-hidden="true">🎯</span>
+              </div>
+              <h2 className="font-display text-2xl font-bold text-white mb-2">No sessions recorded yet</h2>
+              <p className="text-slate-400 max-w-md mx-auto mb-8">
+                Your communication dashboard is empty. Complete your first practice session to unlock insights, track your progress, and get AI coaching feedback.
+              </p>
+              <Link
+                to="/v2/practice"
+                className="inline-flex items-center justify-center gap-2 rounded-xl bg-primary-600 px-8 py-4 text-[16px] font-bold text-white shadow-lg shadow-primary-500/20 transition-colors hover:bg-primary-500"
+              >
+                <PlusIcon className="h-5 w-5" aria-hidden="true" />
+                Start First Session
+              </Link>
+            </div>
+          </FadeIn>
+        ) : (
+          <>
+            {goalVisible &&
         <FadeIn delay={0.1}>
           <div className="mt-8">
             <ActiveGoalBanner onDismiss={() => setGoalVisible(false)} />
@@ -100,6 +126,8 @@ export function Dashboard() {
               onDelete={(id) => setSessions((prev) => prev.filter((s) => s.id !== id))} />
           </div>
         </FadeIn>
+          </>
+        )}
       </div>
     </main>);
 }
