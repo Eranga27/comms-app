@@ -42,6 +42,15 @@ export function SessionPlayback() {
     };
   }, []);
 
+  // Delete the video when navigating away to save space
+  useEffect(() => {
+    return () => {
+      if (sessionReport?.id) {
+        fetch(`${API_URL}/api/session/${sessionReport.id}/audio`, { method: 'DELETE' }).catch(() => {});
+      }
+    };
+  }, [sessionReport?.id]);
+
   const toggle = () => {
     const el = videoRef.current;
     if (!el || !hasVideo) return;

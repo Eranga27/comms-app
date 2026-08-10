@@ -279,10 +279,10 @@ export function usePracticeSession(): PracticeSessionApi {
 
       // Record canvas stream (includes MediaPipe overlays) + audio
       audioChunksRef.current = [];
-      let recOptions: MediaRecorderOptions = {};
-      if (MediaRecorder.isTypeSupported('video/webm;codecs=vp9,opus')) recOptions = { mimeType: 'video/webm;codecs=vp9,opus' };
-      else if (MediaRecorder.isTypeSupported('video/webm;codecs=vp8,opus')) recOptions = { mimeType: 'video/webm;codecs=vp8,opus' };
-      else if (MediaRecorder.isTypeSupported('video/webm')) recOptions = { mimeType: 'video/webm' };
+      let recOptions: MediaRecorderOptions = { videoBitsPerSecond: 250000 };
+      if (MediaRecorder.isTypeSupported('video/webm;codecs=vp9,opus')) recOptions = { mimeType: 'video/webm;codecs=vp9,opus', videoBitsPerSecond: 250000 };
+      else if (MediaRecorder.isTypeSupported('video/webm;codecs=vp8,opus')) recOptions = { mimeType: 'video/webm;codecs=vp8,opus', videoBitsPerSecond: 250000 };
+      else if (MediaRecorder.isTypeSupported('video/webm')) recOptions = { mimeType: 'video/webm', videoBitsPerSecond: 250000 };
 
       let targetStream: MediaStream = stream;
       if (canvasRef.current) {

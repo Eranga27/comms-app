@@ -341,6 +341,18 @@ async def process_session_audio(session_id: str, file: UploadFile = File(...), d
             base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
             media_dir = os.path.join(base_dir, "media")
             os.makedirs(media_dir, exist_ok=True)
+            
+            # Cleanup old videos to save space (older than 15 mins)
+            now = time.time()
+            for filename in os.listdir(media_dir):
+                filepath = os.path.join(media_dir, filename)
+                if os.path.isfile(filepath):
+                    if now - os.path.getmtime(filepath) > 900:
+                        try:
+                            os.remove(filepath)
+                        except Exception:
+                            pass
+
             save_path = os.path.join(media_dir, f"{session_id}.webm")
             with open(save_path, "wb") as f:
                 f.write(contents)
@@ -351,3 +363,16 @@ async def process_session_audio(session_id: str, file: UploadFile = File(...), d
     except Exception as e:
         print(f"Audio endpoint error: {e}")
         return {"status": "error", "detail": str(e)}
+
+@router.delete("/session/{session_id}/audio")
+def delete_session_audio(session_id: str):
+    """Delete just the video to save space once it's been viewed."""
+    base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    media_path = os.path.join(base_dir, "media", f"{session_id}.webm")
+    if os.path.exists(media_path):
+        try:
+            os.remove(media_path)
+            return {"status": "success"}
+        except Exception as e:
+            return {"status": "error", "detail": str(e)}
+    return {"status": "not_found"}
