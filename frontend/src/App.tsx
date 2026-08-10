@@ -2,6 +2,7 @@ import React from 'react';
 import { BrowserRouter, Route, Routes, useLocation } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Navbar } from './components/Navbar';
+import { GlobalBackground } from './components/common/GlobalBackground';
 import { Landing } from './pages/Landing';
 import { Practice } from './pages/Practice';
 import { Dashboard } from './pages/Dashboard';
@@ -17,6 +18,7 @@ function Shell() {
 
   return (
     <div className="min-h-screen w-full bg-slate-950 flex flex-col">
+      <GlobalBackground />
       {!hideNav && <Navbar />}
       <AuthModal />
       <AnimatePresence mode="wait">
