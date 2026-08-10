@@ -11,15 +11,29 @@ import { QuickStats } from '../components/dashboard/QuickStats';
 import { Recommended } from '../components/dashboard/Recommended';
 import { SessionComparison } from '../components/dashboard/SessionComparison';
 import { SessionHistory } from '../components/dashboard/SessionHistory';
-import { insights, recommendations } from '../data/sessions';
 import { useAuth } from '../contexts/AuthContext';
 import { useDashboardData } from '../hooks/useDashboardData';
 
 export function Dashboard() {
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
   const [goalVisible, setGoalVisible] = useState(true);
   
-  const { sessions, trend, quickStats, skillComparison, isLoading, setSessions } = useDashboardData();
+  const {
+    sessions, setSessions,
+    trend,
+    quickStats,
+    skillComparison,
+    isLoading,
+    avgScore,
+    level,
+    grade,
+    sessionCount,
+    insights,
+    recommendations,
+    activeGoal,
+    setActiveGoal,
+    GOAL_DEFAULTS,
+  } = useDashboardData();
 
   const displayName = user?.first_name || user?.username || 'Communicator';
 
@@ -55,8 +69,8 @@ export function Dashboard() {
           </div>
           <Link
             to="/v2/practice"
-            className="inline-flex items-center justify-center gap-2 rounded-xl bg-primary-600 px-6 py-3.5 text-[15px] font-bold text-white shadow-lg shadow-primary-500/20 transition-colors hover:bg-primary-500">
-            
+            className="inline-flex items-center justify-center gap-2 rounded-xl bg-primary-600 px-6 py-3.5 text-[15px] font-bold text-white shadow-lg shadow-primary-500/20 transition-colors hover:bg-primary-500"
+          >
             <PlusIcon className="h-4 w-4" aria-hidden="true" />
             Start New Session
           </Link>
@@ -83,51 +97,60 @@ export function Dashboard() {
           </FadeIn>
         ) : (
           <>
-            {goalVisible &&
-        <FadeIn delay={0.1}>
-          <div className="mt-8">
-            <ActiveGoalBanner onDismiss={() => setGoalVisible(false)} />
-          </div>
-        </FadeIn>
-        }
+            {goalVisible && (
+              <FadeIn delay={0.1}>
+                <div className="mt-8">
+                  <ActiveGoalBanner
+                    onDismiss={() => setGoalVisible(false)}
+                    activeGoal={activeGoal}
+                    goalDefaults={GOAL_DEFAULTS}
+                    onGoalChange={setActiveGoal}
+                  />
+                </div>
+              </FadeIn>
+            )}
 
-        <FadeIn delay={0.2}>
-          <div className="mt-6 grid gap-5 lg:grid-cols-3">
-            <LevelCard score={78} level="Advanced Communicator" grade="A-" />
-            <div className="lg:col-span-2">
-              <QuickStats stats={quickStats} />
-            </div>
-          </div>
-        </FadeIn>
+            <FadeIn delay={0.2}>
+              <div className="mt-6 grid gap-5 lg:grid-cols-3">
+                <div title={`Based on your rolling average across ${sessionCount} session${sessionCount !== 1 ? 's' : ''}`}>
+                  <LevelCard score={avgScore} level={level} grade={grade} />
+                </div>
+                <div className="lg:col-span-2">
+                  <QuickStats stats={quickStats} />
+                </div>
+              </div>
+            </FadeIn>
 
-        <FadeIn delay={0.3}>
-          <div className="mt-5">
-            <ProgressChart data={trend} />
-          </div>
-        </FadeIn>
+            <FadeIn delay={0.3}>
+              <div className="mt-5">
+                <ProgressChart data={trend} />
+              </div>
+            </FadeIn>
 
-        <FadeIn delay={0.4}>
-          <div className="mt-5 grid gap-5 lg:grid-cols-2">
-            <SessionComparison skills={skillComparison} />
-            <PersonalInsights />
-          </div>
-        </FadeIn>
+            <FadeIn delay={0.4}>
+              <div className="mt-5 grid gap-5 lg:grid-cols-2">
+                <SessionComparison skills={skillComparison} />
+                <PersonalInsights insights={insights} />
+              </div>
+            </FadeIn>
 
-        <FadeIn>
-          <div className="mt-5">
-            <Recommended />
-          </div>
-        </FadeIn>
+            <FadeIn>
+              <div className="mt-5">
+                <Recommended recommendations={recommendations} />
+              </div>
+            </FadeIn>
 
-        <FadeIn>
-          <div className="mt-5">
-            <SessionHistory
-              sessions={sessions}
-              onDelete={(id) => setSessions((prev) => prev.filter((s) => s.id !== id))} />
-          </div>
-        </FadeIn>
+            <FadeIn>
+              <div className="mt-5">
+                <SessionHistory
+                  sessions={sessions}
+                  onDelete={(id) => setSessions((prev) => prev.filter((s) => s.id !== id))} />
+              </div>
+            </FadeIn>
           </>
         )}
       </div>
-    </main>);
+    </main>
+  );
 }
+
