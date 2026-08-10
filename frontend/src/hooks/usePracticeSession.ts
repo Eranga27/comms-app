@@ -72,6 +72,7 @@ export function usePracticeSession(): PracticeSessionApi {
   const isRecordingRef = useRef<boolean>(false);
   const transcriptRef = useRef<string>('');
   const activeToastTimerRef = useRef<number | null>(null);
+  const interimTranscriptRef = useRef<string>('');
 
   const faceMeshRef = useRef<any>(null);
   const handsRef = useRef<any>(null);
@@ -260,6 +261,7 @@ export function usePracticeSession(): PracticeSessionApi {
     setTranscript('');
     setInterimTranscript('');
     transcriptRef.current = '';
+    interimTranscriptRef.current = '';
     setState('recording');
     isRecordingRef.current = true;
 
@@ -338,6 +340,7 @@ export function usePracticeSession(): PracticeSessionApi {
           }
           // Show interim text live
           setInterimTranscript(interimChunk);
+          interimTranscriptRef.current = interimChunk;
 
           if (finalChunk.trim()) {
             const cleanChunk = finalChunk.trim() + ' ';
@@ -436,7 +439,8 @@ export function usePracticeSession(): PracticeSessionApi {
     if (timerIntervalRef.current) clearInterval(timerIntervalRef.current);
 
     if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
-      wsRef.current.send(JSON.stringify({ type: 'final_transcript', data: transcriptRef.current }));
+      const finalFullTranscript = (transcriptRef.current + ' ' + interimTranscriptRef.current).trim();
+      wsRef.current.send(JSON.stringify({ type: 'final_transcript', data: finalFullTranscript }));
       // Give the server ~500ms to process final_transcript before disconnect
       setTimeout(() => wsRef.current?.close(), 500);
     }
@@ -472,6 +476,8 @@ export function usePracticeSession(): PracticeSessionApi {
     setNotes([]);
     setTranscript('');
     setInterimTranscript('');
+    transcriptRef.current = '';
+    interimTranscriptRef.current = '';
     setElapsed(0);
     if (metricsIntervalRef.current) clearInterval(metricsIntervalRef.current);
     if (volIntervalRef.current) clearInterval(volIntervalRef.current);

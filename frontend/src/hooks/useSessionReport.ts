@@ -56,10 +56,10 @@ export function useSessionReport(sessionId: string | undefined) {
             { dimension: 'Content', value: Math.round(((dbSession.content_score || 0) / 15) * 100) }
           ],
           strengths: feedback.strengths || ['Good effort in maintaining a steady pace.', 'You completed the practice successfully.'],
-          focusAreas: (feedback.weaknesses || ['Consider reducing filler words', 'Work on varying your vocal tone']).map((w: string) => ({
-            area: w, tip: 'Focus on this specific area during your next session.'
+          focusAreas: (feedback.weaknesses || ['No major behavioral flags detected.']).map((w: string, idx: number) => ({
+            area: w, tip: (feedback.tips && feedback.tips[idx]) ? feedback.tips[idx] : 'Focus on this specific area during your next session.'
           })),
-          coachSummary: feedback.summary ? [feedback.summary] : ['The AI coach analyzed your session. Keep practicing to see detailed trends.'],
+          coachSummary: feedback.feedback_summary ? [feedback.feedback_summary] : ['The AI coach analyzed your session. Keep practicing to see detailed trends.'],
           cafBreakdown: [
             {
               label: 'Speech Analysis', emoji: '🗣️', metrics: [
@@ -73,7 +73,7 @@ export function useSessionReport(sessionId: string | undefined) {
               ]
             }
           ],
-          transcript: [{ time: '00:00', text: dbSession.transcript || 'No transcript recorded.', fillers: [] }]
+          transcript: [{ time: '00:00', text: dbSession.transcript || 'No transcript recorded.', fillers: ['um', 'uh', 'ah', 'like', 'basically', 'actually', 'literally', 'you know', 'i mean', 'sort of', 'kind of'] }]
         };
 
         setData(formatted);
