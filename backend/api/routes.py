@@ -10,6 +10,7 @@ import os
 
 from core.coach import generate_coaching_report
 from core.database import get_db
+from core.security import get_current_user
 import core.models as models
 
 JWT_SECRET = os.getenv("JWT_SECRET_KEY", "eloquent_one_super_secret_key_change_me_in_prod")
@@ -66,9 +67,13 @@ def get_all_sessions(request: Request, db: Session = Depends(get_db)):
     } for s in db_sessions]
 
 @router.get("/session/{session_id}")
-def get_session(session_id: str, db: Session = Depends(get_db)):
+def get_session(
+    session_id: str,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user)
+):
     db_session = db.query(models.Session).filter(models.Session.id == session_id).first()
-    if not db_session:
+    if not db_session or db_session.user_id != current_user.id:
         raise HTTPException(status_code=404, detail="Session not found")
     
     return {
@@ -92,9 +97,13 @@ def get_session(session_id: str, db: Session = Depends(get_db)):
     }
 
 @router.delete("/session/{session_id}")
-def delete_session(session_id: str, db: Session = Depends(get_db)):
+def delete_session(
+    session_id: str,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user)
+):
     db_session = db.query(models.Session).filter(models.Session.id == session_id).first()
-    if not db_session:
+    if not db_session or db_session.user_id != current_user.id:
         raise HTTPException(status_code=404, detail="Session not found")
     
     # Try to delete associated video file

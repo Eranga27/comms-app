@@ -14,7 +14,10 @@ export function useSessionReport(sessionId: string | undefined) {
 
     async function fetchSession(retries = 15) {
       try {
-        const res = await fetch(`${API_URL}/api/session/${sessionId}`);
+        const token = localStorage.getItem('eloquent_token');
+        const res = await fetch(`${API_URL}/api/session/${sessionId}`, {
+          headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+        });
         
         if (res.status === 404 && retries > 0) {
           setTimeout(() => fetchSession(retries - 1), 2000);

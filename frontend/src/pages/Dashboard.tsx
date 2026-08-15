@@ -144,7 +144,17 @@ export function Dashboard() {
               <div className="mt-5">
                 <SessionHistory
                   sessions={sessions}
-                  onDelete={(id) => setSessions((prev) => prev.filter((s) => s.id !== id))} />
+                  onDelete={async (id) => {
+                    const token = localStorage.getItem('eloquent_token');
+                    try {
+                      await fetch(`${API_URL}/api/session/${id}`, {
+                        method: 'DELETE',
+                        headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+                      });
+                    } catch (e) {}
+                    setSessions((prev) => prev.filter((s) => s.id !== id));
+                  }}
+                />
               </div>
             </FadeIn>
           </>
