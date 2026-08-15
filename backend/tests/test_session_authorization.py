@@ -35,13 +35,10 @@ def override_get_db():
         db.close()
 
 
-app.dependency_overrides[get_db] = override_get_db
-
-
-class TestSessionAuthorization(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         Base.metadata.create_all(bind=engine)
+        app.dependency_overrides[get_db] = override_get_db
         cls.client = TestClient(app)
 
         db = TestingSessionLocal()
@@ -113,6 +110,7 @@ class TestSessionAuthorization(unittest.TestCase):
     @classmethod
     def tearDownClass(cls):
         Base.metadata.drop_all(bind=engine)
+        app.dependency_overrides.clear()
 
     def test_01_user_can_access_own_session(self):
         """Requirement 1: User can access their own session."""
