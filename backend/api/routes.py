@@ -11,6 +11,8 @@ import os
 from core.coach import generate_coaching_report
 from core.database import get_db
 from core.security import get_current_user, get_jwt_secret
+from core.config import settings
+from core.rate_limiter import get_client_ip, check_rate_limit
 import core.models as models
 
 def _user_id_from_token(token: str) -> Optional[int]:
@@ -124,6 +126,11 @@ async def practice_session_websocket(
     token: str = Query(default=""),
     db: Session = Depends(get_db)
 ):
+    client_ip = get_client_ip(websocket)
+    if not check_rate_limit("ws", client_ip, settings.RATE_LIMIT_WS_PER_MIN):
+        await websocket.close(code=1008, reason="WebSocket rate limit exceeded")
+        return
+
     await websocket.accept()
     active_sessions[session_id] = websocket
     
@@ -146,6 +153,22 @@ async def practice_session_websocket(
 
     try:
         while True:
+            # Enforce server-side maximum session duration protection
+            elapsed_seconds = time.time() - session_state[session_id]["start_time"]
+            if elapsed_seconds >= settings.MAX_SESSION_DURATION_SECONDS:
+                print(f"Session {session_id} reached max duration of {settings.MAX_SESSION_DURATION_SECONDS}s. Terminating gracefully.")
+                try:
+                    await websocket.send_json({
+                        "type": "duration_exceeded",
+                        "data": {
+                            "message": f"Maximum session duration of {settings.MAX_SESSION_DURATION_SECONDS // 60} minutes reached. Finalizing report.",
+                            "max_seconds": settings.MAX_SESSION_DURATION_SECONDS
+                        }
+                    })
+                except Exception:
+                    pass
+                break
+
             data_str = await websocket.receive_text()
             try:
                 payload = json.loads(data_str)
@@ -259,7 +282,9 @@ async def practice_session_websocket(
             except json.JSONDecodeError:
                 pass
                 
-    except WebSocketDisconnect:
+    except (WebSocketDisconnect, Exception) as e:
+        pass
+    finally:
         print(f"Session {session_id} disconnected. Generating report...")
         if session_id in active_sessions:
             del active_sessions[session_id]
@@ -369,39 +394,75 @@ async def practice_session_websocket(
             asyncio.create_task(save_session())
 
 @router.post("/session/{session_id}/audio")
-async def process_session_audio(session_id: str, file: UploadFile = File(...), db: Session = Depends(get_db)):
+async def process_session_audio(request: Request, session_id: str, file: UploadFile = File(...), db: Session = Depends(get_db)):
     """
     Save the canvas-recorded webm to disk so the Results page can play it back.
-    The session report was already generated asynchronously via WebSocket on disconnect.
+    Enforces rate limits and maximum upload size limits using streaming chunk verification.
     """
-    try:
-        contents = await file.read()
-        if contents:
-            base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-            media_dir = os.path.join(base_dir, "media")
-            os.makedirs(media_dir, exist_ok=True)
-            
-            # Cleanup old videos to save space (older than 15 mins)
-            now = time.time()
-            for filename in os.listdir(media_dir):
-                filepath = os.path.join(media_dir, filename)
-                if os.path.isfile(filepath):
-                    if now - os.path.getmtime(filepath) > 900:
-                        try:
-                            os.remove(filepath)
-                        except Exception:
-                            pass
+    client_ip = get_client_ip(request)
+    if not check_rate_limit("uploads", client_ip, settings.RATE_LIMIT_UPLOADS_PER_MIN):
+        raise HTTPException(status_code=429, detail="Too many file upload requests. Please try again later.")
 
-            save_path = os.path.join(media_dir, f"{session_id}.webm")
-            with open(save_path, "wb") as f:
-                f.write(contents)
-            print(f"Session video saved: {save_path} ({len(contents)} bytes)")
-        else:
+    max_bytes = settings.MAX_UPLOAD_SIZE_MB * 1024 * 1024
+    content_length = request.headers.get("content-length")
+    if content_length:
+        try:
+            if int(content_length) > max_bytes:
+                raise HTTPException(status_code=413, detail=f"Upload size exceeds maximum allowed limit of {settings.MAX_UPLOAD_SIZE_MB}MB")
+        except ValueError:
+            pass
+
+    base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    media_dir = os.path.join(base_dir, "media")
+    os.makedirs(media_dir, exist_ok=True)
+    
+    # Cleanup old videos to save space (older than 15 mins)
+    now = time.time()
+    for filename in os.listdir(media_dir):
+        filepath = os.path.join(media_dir, filename)
+        if os.path.isfile(filepath):
+            if now - os.path.getmtime(filepath) > 900:
+                try:
+                    os.remove(filepath)
+                except Exception:
+                    pass
+
+    temp_path = os.path.join(media_dir, f"{session_id}.webm.tmp")
+    save_path = os.path.join(media_dir, f"{session_id}.webm")
+    total_bytes = 0
+
+    try:
+        with open(temp_path, "wb") as f:
+            while True:
+                chunk = await file.read(64 * 1024)
+                if not chunk:
+                    break
+                total_bytes += len(chunk)
+                if total_bytes > max_bytes:
+                    f.close()
+                    if os.path.exists(temp_path):
+                        os.remove(temp_path)
+                    raise HTTPException(status_code=413, detail=f"Upload size exceeds maximum allowed limit of {settings.MAX_UPLOAD_SIZE_MB}MB")
+                f.write(chunk)
+
+        if total_bytes == 0:
+            if os.path.exists(temp_path):
+                os.remove(temp_path)
             print(f"Empty video upload for session {session_id}, skipping save.")
+            return {"status": "success"}
+
+        if os.path.exists(save_path):
+            os.remove(save_path)
+        os.rename(temp_path, save_path)
+        print(f"Session video saved: {save_path} ({total_bytes} bytes)")
         return {"status": "success"}
+    except HTTPException:
+        raise
     except Exception as e:
+        if os.path.exists(temp_path):
+            os.remove(temp_path)
         print(f"Audio endpoint error: {e}")
-        return {"status": "error", "detail": str(e)}
+        raise HTTPException(status_code=500, detail="Failed to save upload media file")
 
 @router.delete("/session/{session_id}/audio")
 def delete_session_audio(session_id: str):

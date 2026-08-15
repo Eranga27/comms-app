@@ -89,10 +89,17 @@ class RegisterResponse(BaseModel):
     email: str
 
 
+from core.config import settings
+from core.rate_limiter import get_client_ip, check_rate_limit
+
 # ── Local Auth ────────────────────────────────────────────────────────────────
 
 @router.post("/register", response_model=RegisterResponse)
-def register_user(user: UserCreate, db: Session = Depends(get_db)):
+def register_user(request: Request, user: UserCreate, db: Session = Depends(get_db)):
+    ip = get_client_ip(request)
+    if not check_rate_limit("auth", ip, settings.RATE_LIMIT_AUTH_PER_MIN):
+        raise HTTPException(status_code=429, detail="Too many authentication requests. Please try again in a minute.")
+
     existing = db.query(User).filter(User.email == user.email.strip().lower()).first()
     if existing:
         if existing.is_verified == 0:
@@ -125,7 +132,11 @@ def register_user(user: UserCreate, db: Session = Depends(get_db)):
 
 
 @router.post("/verify-otp", response_model=Token)
-def verify_otp(payload: OtpVerify, db: Session = Depends(get_db)):
+def verify_otp(request: Request, payload: OtpVerify, db: Session = Depends(get_db)):
+    ip = get_client_ip(request)
+    if not check_rate_limit("auth", ip, settings.RATE_LIMIT_AUTH_PER_MIN):
+        raise HTTPException(status_code=429, detail="Too many verification attempts. Please try again in a minute.")
+
     user = db.query(User).filter(User.email == payload.email.strip().lower()).first()
     if not user:
         raise HTTPException(status_code=404, detail="Account not found.")
@@ -144,7 +155,11 @@ def verify_otp(payload: OtpVerify, db: Session = Depends(get_db)):
 
 
 @router.post("/login", response_model=Token)
-def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
+def login(request: Request, form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
+    ip = get_client_ip(request)
+    if not check_rate_limit("auth", ip, settings.RATE_LIMIT_AUTH_PER_MIN):
+        raise HTTPException(status_code=429, detail="Too many login attempts. Please try again in a minute.")
+
     user = db.query(User).filter(User.email == form_data.username.strip().lower()).first()
     if not user or not verify_password(form_data.password, user.hashed_password):
         raise HTTPException(
