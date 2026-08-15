@@ -36,6 +36,19 @@ def get_jwt_secret() -> str:
 
     return secret
 
+import bcrypt
+try:
+    if not hasattr(bcrypt, "__about__"):
+        bcrypt.__about__ = type("about", (), {"__version__": getattr(bcrypt, "__version__", "4.0.0")})()
+    _orig_hashpw = bcrypt.hashpw
+    def _safe_hashpw(password, salt):
+        if isinstance(password, bytes) and len(password) > 72:
+            password = password[:72]
+        return _orig_hashpw(password, salt)
+    bcrypt.hashpw = _safe_hashpw
+except Exception:
+    pass
+
 SECRET_KEY = get_jwt_secret()
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24 * 7 # 7 days
@@ -48,6 +61,8 @@ def verify_password(plain_password, hashed_password):
     return pwd_context.verify(plain_password, hashed_password)
 
 def get_password_hash(password):
+    if isinstance(password, str):
+        password = password[:72]
     return pwd_context.hash(password)
 
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
