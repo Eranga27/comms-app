@@ -21,6 +21,7 @@ interface CameraStageProps {
   onStart: () => void;
   onStop: () => void;
   onCancel: () => void;
+  onRetryMedia?: () => void;
 }
 
 function QualityDot({ level }: { level: 'good' | 'moderate' | 'poor' }) {
@@ -50,6 +51,7 @@ export function CameraStage({
   onStart,
   onStop,
   onCancel,
+  onRetryMedia,
 }: CameraStageProps) {
   const recording = state === 'recording';
   const booting = !cameraReady || !engineReady;
@@ -209,8 +211,17 @@ export function CameraStage({
         )}
 
         {cameraError && !booting && (
-          <div className="absolute bottom-4 right-4 rounded-xl border border-amber-500/30 bg-amber-500/10 px-3.5 py-2 text-[12px] text-amber-400 backdrop-blur-md">
-            {cameraError}
+          <div className="absolute bottom-4 right-4 flex items-center gap-3 rounded-xl border border-amber-500/30 bg-amber-950/80 px-3.5 py-2 text-[12px] text-amber-400 backdrop-blur-md">
+            <span>{cameraError}</span>
+            {onRetryMedia && (
+              <button
+                type="button"
+                onClick={onRetryMedia}
+                className="rounded-lg bg-amber-500/20 px-2.5 py-1 text-[11px] font-bold text-amber-300 transition-colors hover:bg-amber-500/30"
+              >
+                Retry Media
+              </button>
+            )}
           </div>
         )}
       </div>

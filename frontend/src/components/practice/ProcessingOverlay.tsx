@@ -14,14 +14,18 @@ interface ProcessingOverlayProps {
 
 export function ProcessingOverlay({ onComplete }: ProcessingOverlayProps) {
   const [active, setActive] = useState(0);
+  const [takingLonger, setTakingLonger] = useState(false);
 
   useEffect(() => {
     const timers = stepLabels.map((_, i) =>
-    window.setTimeout(() => setActive(i + 1), (i + 1) * 1300)
+      window.setTimeout(() => setActive(i + 1), (i + 1) * 1300)
     );
+    const slowNoticeTimer = window.setTimeout(() => setTakingLonger(true), 6000);
     const done = window.setTimeout(onComplete, stepLabels.length * 1300 + 700);
+
     return () => {
       timers.forEach(window.clearTimeout);
+      window.clearTimeout(slowNoticeTimer);
       window.clearTimeout(done);
     };
   }, [onComplete]);
@@ -36,9 +40,14 @@ export function ProcessingOverlay({ onComplete }: ProcessingOverlayProps) {
       
       <div className="w-full max-w-md rounded-3xl border border-white/10 bg-white/5 p-8 backdrop-blur-xl">
         <div className="mx-auto mb-7 h-12 w-12 animate-spin rounded-full border-4 border-slate-800 border-t-primary-500" />
-        <p className="mb-6 text-center text-[11px] font-bold uppercase tracking-widest text-primary-400">
+        <p className="mb-2 text-center text-[11px] font-bold uppercase tracking-widest text-primary-400">
           Building your report
         </p>
+        {takingLonger && (
+          <p className="mb-4 text-center text-[12px] text-amber-400 font-medium animate-pulse">
+            Finalizing analysis... preserving your session telemetry.
+          </p>
+        )}
         <ol className="space-y-4">
           {stepLabels.map((label, i) => {
             const complete = active > i;

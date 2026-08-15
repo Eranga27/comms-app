@@ -106,28 +106,53 @@ export function usePracticeSession(): PracticeSessionApi {
     checkScripts();
   }, []);
 
-  // Initialize camera
-  useEffect(() => {
-    let cancelled = false;
-    async function boot() {
+  // Media acquisition helper with multi-tier fallbacks
+  const acquireMedia = useCallback(async () => {
+    setCameraError(null);
+    try {
+      // Tier 1: Full HD Video + Audio
+      const stream = await navigator.mediaDevices.getUserMedia({ video: { width: 1280, height: 720 }, audio: true });
+      streamRef.current = stream;
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream;
+        videoRef.current.play().catch(() => {});
+      }
+      setCameraReady(true);
+      return;
+    } catch (err1) {
       try {
-        const stream = await navigator.mediaDevices.getUserMedia({ video: { width: 1280, height: 720 }, audio: true });
-        if (cancelled) {
-          stream.getTracks().forEach((t) => t.stop());
-          return;
-        }
+        // Tier 2: Video only (microphone unavailable or permission denied)
+        const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
         streamRef.current = stream;
         if (videoRef.current) {
           videoRef.current.srcObject = stream;
-          videoRef.current.play().catch(console.error);
+          videoRef.current.play().catch(() => {});
         }
         setCameraReady(true);
-      } catch (err) {
-        if (!cancelled) {
-          setCameraError('Camera unavailable — running in preview mode.');
+        setToast({ id: Date.now(), type: 'warning', message: 'Microphone unavailable — running in video-only mode.', timestamp: '00:00' });
+        return;
+      } catch (err2) {
+        try {
+          // Tier 3: Audio only (camera unavailable or in use by another app)
+          const stream = await navigator.mediaDevices.getUserMedia({ video: false, audio: true });
+          streamRef.current = stream;
+          setCameraReady(true);
+          setCameraError('Camera unavailable — running in audio-only practice mode.');
+          return;
+        } catch (err3) {
+          // Tier 4: Graceful notice with Retry option
+          setCameraError('Camera & Microphone access unavailable. Please check browser permissions and click Retry.');
           setCameraReady(true);
         }
       }
+    }
+  }, []);
+
+  // Initialize camera/mic
+  useEffect(() => {
+    let cancelled = false;
+    async function boot() {
+      if (!cancelled) await acquireMedia();
     }
     boot();
     return () => {
@@ -135,7 +160,7 @@ export function usePracticeSession(): PracticeSessionApi {
       if (streamRef.current) streamRef.current.getTracks().forEach((t) => t.stop());
       if (cameraRafRef.current) cancelAnimationFrame(cameraRafRef.current);
     };
-  }, []);
+  }, [acquireMedia]);
 
   // Setup MediaPipe processing loop
   useEffect(() => {
@@ -506,6 +531,7 @@ export function usePracticeSession(): PracticeSessionApi {
     telemetry,
     start,
     stop,
-    cancel
+    cancel,
+    retryMedia: acquireMedia
   };
 }

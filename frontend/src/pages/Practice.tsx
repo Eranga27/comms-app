@@ -105,6 +105,7 @@ export function Practice() {
               onStart={handleStart}
               onStop={handleStop}
               onCancel={session.cancel}
+              onRetryMedia={session.retryMedia}
             />
 
             <TranscriptPanel
