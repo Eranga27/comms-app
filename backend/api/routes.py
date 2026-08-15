@@ -10,17 +10,15 @@ import os
 
 from core.coach import generate_coaching_report
 from core.database import get_db
-from core.security import get_current_user
+from core.security import get_current_user, get_jwt_secret
 import core.models as models
-
-JWT_SECRET = os.getenv("JWT_SECRET_KEY", "eloquent_one_super_secret_key_change_me_in_prod")
 
 def _user_id_from_token(token: str) -> Optional[int]:
     """Returns user id from a JWT token string, or None if invalid."""
     if not token:
         return None
     try:
-        payload = jwt.decode(token, JWT_SECRET, algorithms=["HS256"])
+        payload = jwt.decode(token, get_jwt_secret(), algorithms=["HS256"])
         sub = payload.get("sub")
         return int(sub) if sub else None
     except Exception:

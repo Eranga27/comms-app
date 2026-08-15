@@ -9,7 +9,34 @@ from core.database import get_db
 from core.models import User
 import os
 
-SECRET_KEY = os.getenv("JWT_SECRET_KEY", "eloquent_one_super_secret_key_change_me_in_prod")
+DEFAULT_DEV_SECRET = "eloquent_one_dev_secret_key_local_only"
+
+def get_jwt_secret() -> str:
+    """
+    Loads the JWT secret key from environment.
+    If running in production (ENVIRONMENT=production/prod), a missing or default secret key
+    will raise a RuntimeError to prevent insecure deployment.
+    """
+    secret = os.getenv("JWT_SECRET_KEY", "").strip()
+    env = os.getenv("ENVIRONMENT", os.getenv("APP_ENV", "development")).lower()
+    is_production = env in ("production", "prod")
+
+    if not secret:
+        if is_production:
+            raise RuntimeError(
+                "CRITICAL CONFIGURATION ERROR: JWT_SECRET_KEY environment variable is missing. "
+                "Production deployment cannot start without a secure JWT secret key."
+            )
+        secret = DEFAULT_DEV_SECRET
+
+    if is_production and secret in (DEFAULT_DEV_SECRET, "eloquent_one_super_secret_key_change_me_in_prod"):
+        raise RuntimeError(
+            "CRITICAL CONFIGURATION ERROR: Insecure or default JWT secret key cannot be used in production."
+        )
+
+    return secret
+
+SECRET_KEY = get_jwt_secret()
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24 * 7 # 7 days
 
@@ -30,7 +57,7 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     else:
         expire = datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     to_encode.update({"exp": expire})
-    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+    encoded_jwt = jwt.encode(to_encode, get_jwt_secret(), algorithm=ALGORITHM)
     return encoded_jwt
 
 async def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
@@ -40,7 +67,7 @@ async def get_current_user(token: str = Depends(oauth2_scheme), db: Session = De
         headers={"WWW-Authenticate": "Bearer"},
     )
     try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        payload = jwt.decode(token, get_jwt_secret(), algorithms=[ALGORITHM])
         user_id: str = payload.get("sub")
         if user_id is None:
             raise credentials_exception
