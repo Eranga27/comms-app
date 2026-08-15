@@ -305,34 +305,38 @@ async def practice_session_websocket(
                 report["grade"] = grade
                 report["caf_breakdown"] = caf_report["categories"]
                 
-                # 4. Save to Database
-                db_session = models.Session(
-                    id=session_id,
-                    user_id=state.get("user_id"),
-                    session_label=state.get("session_label", "Practice Session"),
-                    practice_context=state.get("practice_context", "Custom Practice"),
-                    duration_seconds=duration,
-                    overall_score=total_score,
-                    speech_score=caf_report["categories"]["speech_delivery"]["total"],
-                    facial_score=caf_report["categories"]["facial_communication"]["total"],
-                    gesture_score=caf_report["categories"]["gesture_communication"]["total"],
-                    posture_score=caf_report["categories"]["posture_presence"]["total"],
-                    content_score=content_score,
-                    communication_grade=grade,
-                    eye_contact_score=avg_eye_contact,
-                    filler_words_count=state["filler_words_count"],
-                    transcript=full_transcript,
-                    timeline_events=state.get("timeline_events", []),
-                    behavioral_flags=list(state.get("behavioral_flags", [])),
-                    feedback_summary=json.dumps(report)
-                )
-                db.add(db_session)
+                # 4. Save to Database using a dedicated, standalone session lifecycle
+                from core.database import SessionLocal
+                save_db = SessionLocal()
                 try:
-                    db.commit()
+                    db_session = models.Session(
+                        id=session_id,
+                        user_id=state.get("user_id"),
+                        session_label=state.get("session_label", "Practice Session"),
+                        practice_context=state.get("practice_context", "Custom Practice"),
+                        duration_seconds=duration,
+                        overall_score=total_score,
+                        speech_score=caf_report["categories"]["speech_delivery"]["total"],
+                        facial_score=caf_report["categories"]["facial_communication"]["total"],
+                        gesture_score=caf_report["categories"]["gesture_communication"]["total"],
+                        posture_score=caf_report["categories"]["posture_presence"]["total"],
+                        content_score=content_score,
+                        communication_grade=grade,
+                        eye_contact_score=avg_eye_contact,
+                        filler_words_count=state["filler_words_count"],
+                        transcript=full_transcript,
+                        timeline_events=state.get("timeline_events", []),
+                        behavioral_flags=list(state.get("behavioral_flags", [])),
+                        feedback_summary=json.dumps(report)
+                    )
+                    save_db.add(db_session)
+                    save_db.commit()
                     print(f"Session {session_id} saved successfully.")
                 except Exception as e:
-                    db.rollback()
+                    save_db.rollback()
                     print(f"Error saving session: {e}")
+                finally:
+                    save_db.close()
                     
             asyncio.create_task(save_session())
 
