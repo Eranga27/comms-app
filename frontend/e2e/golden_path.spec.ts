@@ -96,8 +96,8 @@ test.describe('Eloquent One — Golden Path End-to-End Journey', () => {
   test('Complete Golden Path: Landing → Practice Setup → Live Session → Processing → Results Report', async ({ page }) => {
     // Step 1: Landing Page
     await page.goto('/');
-    await expect(page.locator('h1')).toContainText('Communicate with');
-    await expect(page.locator('h1')).toContainText('Absolute Clarity');
+    await expect(page.locator('h1')).toContainText('Speak with');
+    await expect(page.locator('h1')).toContainText('Confidence');
 
     // Step 2: Navigate to Practice / Guest Setup
     const startPracticeBtn = page.getByRole('button', { name: /Start Practising Free/i }).first();

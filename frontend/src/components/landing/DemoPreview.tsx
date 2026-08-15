@@ -112,6 +112,30 @@ export function DemoPreview() {
           </span>
         </div>
       </motion.div>
+
+      {/* What we analyse */}
+      <div className="mx-auto mt-10 max-w-4xl">
+        <p className="mb-5 text-center text-[11px] font-bold uppercase tracking-widest text-slate-600">
+          What Eloquent One analyses
+        </p>
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+          {[
+            { icon: '🎙️', label: 'How You Speak', detail: 'Pace, filler words, vocal variety' },
+            { icon: '👁️', label: 'How You Present', detail: 'Eye contact, posture, expression' },
+            { icon: '🤲', label: 'Your Body Language', detail: 'Gestures, presence, composure' },
+            { icon: '💬', label: 'What You Say', detail: 'Clarity, structure, message impact' },
+          ].map((pillar) => (
+            <div
+              key={pillar.label}
+              className="rounded-2xl border border-slate-800/60 bg-slate-900 p-4 text-center"
+            >
+              <span className="text-2xl" aria-hidden="true">{pillar.icon}</span>
+              <p className="mt-3 text-[13px] font-semibold text-white">{pillar.label}</p>
+              <p className="mt-1 text-[12px] leading-relaxed text-slate-500">{pillar.detail}</p>
+            </div>
+          ))}
+        </div>
+      </div>
     </section>);
 
 }

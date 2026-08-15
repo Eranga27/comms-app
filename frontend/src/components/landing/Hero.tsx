@@ -30,22 +30,21 @@ export function Hero() {
         <motion.div variants={item} className="mb-8 flex justify-center">
           <span className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-[13px] font-medium text-slate-300 backdrop-blur-xl">
             <SparklesIcon className="h-3.5 w-3.5 text-primary-400" aria-hidden="true" />
-            Advanced Communication Intelligence
+            Your personal AI communication coach
           </span>
         </motion.div>
 
         <motion.h1
           variants={item}
           className="font-display text-[52px] font-black leading-[1.05] tracking-tight text-white sm:text-7xl lg:text-[88px]">
-          
-          Communicate with
+          Speak with
           <br />
-          <span className="gradient-text">Absolute Clarity.</span>
+          <span className="gradient-text">Confidence.</span>
         </motion.h1>
 
         <motion.p variants={item} className="mx-auto mt-7 max-w-2xl text-[17px] leading-relaxed text-slate-400">
-          On-demand algorithmic coaching for your delivery, presence, and confidence. Speak to your camera for
-          a few minutes and get an executive-level read on how you actually come across.
+          Practice speaking on camera and instantly see how you come across — your delivery, eye contact,
+          body language, and clarity of message — with personalised coaching you can act on today.
         </motion.p>
 
         <motion.div variants={item} className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row">
@@ -72,7 +71,7 @@ export function Hero() {
         </motion.div>
 
         <motion.p variants={item} className="mt-6 font-mono text-[13px] text-slate-600">
-          No credit card · First assessment free
+          Free to start · No credit card required
         </motion.p>
       </motion.div>
     </section>);

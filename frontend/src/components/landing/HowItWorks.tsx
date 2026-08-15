@@ -9,8 +9,8 @@ export function HowItWorks() {
       <div className="mx-auto max-w-6xl">
         <SectionHeading
           label="How It Works"
-          title="Mastery in Three Steps"
-          subtitle="From a few spoken minutes to a report you can act on immediately." />
+          title="Coaching in Three Steps"
+          subtitle="Open your camera, speak naturally, and receive a full coaching report — in under five minutes." />
         
 
         <div className="relative mt-16">

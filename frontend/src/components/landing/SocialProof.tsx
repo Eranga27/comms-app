@@ -1,6 +1,12 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { trustedBy } from '../../data/landing';
+
+const outcomes = [
+  { stat: '5 min', label: 'Average session length' },
+  { stat: '< 30 s', label: 'Time to your first insight' },
+  { stat: '100%', label: 'Private — nothing leaves your browser' },
+  { stat: 'Free', label: 'No credit card, no trial timer' },
+];
 
 export function SocialProof() {
   return (
@@ -10,21 +16,16 @@ export function SocialProof() {
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: '-80px' }}
         transition={{ duration: 0.7, ease: 'easeOut' }}
-        className="mx-auto max-w-6xl text-center">
-        
-        <p className="text-[11px] font-bold uppercase tracking-widest text-slate-600">
-          Trusted by ambitious communicators from
-        </p>
-        <ul className="mt-7 flex flex-wrap items-center justify-center gap-x-10 gap-y-5">
-          {trustedBy.map((name) =>
-          <li
-            key={name}
-            className="font-display text-lg font-bold text-slate-600 transition-colors duration-300 hover:text-primary-400">
-            
-              {name}
-            </li>
-          )}
-        </ul>
+        className="mx-auto max-w-6xl">
+
+        <div className="grid grid-cols-2 gap-6 sm:grid-cols-4">
+          {outcomes.map((o) => (
+            <div key={o.label} className="text-center">
+              <p className="font-display text-3xl font-black text-white">{o.stat}</p>
+              <p className="mt-2 text-[13px] leading-snug text-slate-500">{o.label}</p>
+            </div>
+          ))}
+        </div>
       </motion.div>
     </section>);
 

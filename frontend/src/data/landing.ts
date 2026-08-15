@@ -3,19 +3,19 @@ export const steps = [
   step: 'STEP 1',
   emoji: '🎙️',
   title: 'Practice',
-  description: 'Speak naturally using your camera and microphone. No scripts, no pressure — just you.'
+  description: 'Speak naturally on camera — a pitch, an interview answer, or anything you’re working on. No scripts needed.'
 },
 {
   step: 'STEP 2',
   emoji: '📊',
   title: 'Analyse',
-  description: 'The Intelligence Engine instantly analyses your speech, body language, and behavioural patterns as you talk.'
+  description: 'Your delivery, eye contact, body language, and message clarity are scored in real time as you speak.'
 },
 {
   step: 'STEP 3',
   emoji: '🎯',
   title: 'Improve',
-  description: 'Receive an executive-level report with specific, actionable coaching you can apply today.'
+  description: 'Receive a personalised coaching report with specific, concrete actions you can apply in your next session.'
 }];
 
 
@@ -51,6 +51,5 @@ export const trustedBy = [
 export const navLinks = [
 { label: 'Home', href: '#top' },
 { label: 'How It Works', href: '#how-it-works' },
-{ label: 'Features', href: '#features' },
-{ label: 'Pricing', href: '#pricing' },
-{ label: 'About', href: '#about' }];
+{ label: 'Who Is It For', href: '#about' },
+{ label: 'Why Eloquent One', href: '#features' }];
