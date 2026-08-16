@@ -126,27 +126,30 @@ export function Results() {
             <SessionPlayback />
           </motion.div>
 
-          {/* Pillars + Radar */}
-          <motion.div {...section} className="grid gap-5 lg:grid-cols-2">
-            <PillarBreakdown />
-            <DnaRadar />
-          </motion.div>
-
+          {/* PRIMARY COACHING INSIGHTS: Strengths & Focus Areas */}
           <motion.div {...section}>
             <StrengthsFocus />
           </motion.div>
 
+          {/* COMMUNICATION BREAKDOWN: 5 Pillars + Collapsible Radar */}
+          <motion.div {...section} className="grid gap-5 lg:grid-cols-2 items-start">
+            <PillarBreakdown />
+            <DnaRadar />
+          </motion.div>
+
+          {/* SESSION TRANSCRIPT: Promoted for easy discovery */}
+          <motion.div {...section}>
+            <TranscriptView />
+          </motion.div>
+
+          {/* EXECUTIVE COACH SUMMARY */}
           <motion.div {...section}>
             <CoachSummary />
           </motion.div>
 
+          {/* DETAILED BREAKDOWN ACCORDION */}
           <motion.div {...section}>
             <CafAccordion />
-          </motion.div>
-
-          {/* Transcript full width */}
-          <motion.div {...section}>
-            <TranscriptView />
           </motion.div>
 
           {/* Action buttons */}
