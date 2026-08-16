@@ -9,6 +9,7 @@ import { CoachingToast } from '../components/practice/CoachingToast';
 import { ProcessingOverlay } from '../components/practice/ProcessingOverlay';
 import { SetupModal, SessionSetup } from '../components/practice/SetupModal';
 import { TranscriptPanel } from '../components/practice/TranscriptPanel';
+import { PreFlightCheck } from '../components/practice/PreFlightCheck';
 import { usePracticeSession } from '../hooks/usePracticeSession';
 import { useAuth } from '../contexts/AuthContext';
 import { practiceGoals } from '../data/practice';
@@ -87,6 +88,16 @@ export function Practice() {
 
         <div className="grid gap-5 lg:grid-cols-[1fr_320px]">
           <div className="space-y-5">
+            {session.state !== 'recording' && (
+              <PreFlightCheck
+                cameraReady={session.cameraReady}
+                engineReady={session.engineReady}
+                cameraError={session.cameraError}
+                volumeBars={session.volumeBars}
+                onRetryMedia={session.retryMedia}
+              />
+            )}
+
             <CameraStage
               videoRef={session.videoRef}
               canvasRef={session.canvasRef}
