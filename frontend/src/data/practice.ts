@@ -10,14 +10,14 @@ export const practiceContexts: PracticeContext[] = [
 
 
 export const practiceGoals: PracticeGoal[] = [
-{ id: 'fillers', emoji: '🚫', title: 'Reduce Fillers', description: 'Trade “um” and “like” for confident pauses.', metric: 'Filler words / minute' },
-{ id: 'eye', emoji: '👁️', title: 'Improve Eye Contact', description: 'Hold the camera without drifting away.', metric: 'Eye contact %' },
-{ id: 'confidence', emoji: '💪', title: 'Confidence', description: 'Steady voice, open posture, no hedging.', metric: 'Presence score' },
-{ id: 'story', emoji: '📖', title: 'Storytelling', description: 'Structure a narrative people remember.', metric: 'Message organisation' },
-{ id: 'presentation', emoji: '🖥️', title: 'Presentation Skills', description: 'Signpost clearly and land your points.', metric: 'Clarity score' },
-{ id: 'interview', emoji: '🎯', title: 'Interview Answers', description: 'Tight, evidence-led STAR responses.', metric: 'Answer structure' },
-{ id: 'pace', emoji: '⏱️', title: 'Speaking Pace', description: 'Find the 140–160 WPM sweet spot.', metric: 'Words per minute' },
-{ id: 'custom', emoji: '⚙️', title: 'Custom Goal', description: 'Track something specific to you.', metric: 'You choose' }];
+  { id: 'all', emoji: '🎯', title: 'Skip — Coach me on everything', description: 'Comprehensive real-time analysis across all 4 pillars.', metric: 'All metrics active' },
+  { id: 'confidence', emoji: '💪', title: 'Speak with more confidence', description: 'Steady voice, calm delivery, and open posture.', metric: 'Presence & delivery' },
+  { id: 'pace', emoji: '⏱️', title: 'Slow down my pace', description: 'Find the optimal 140–160 WPM sweet spot.', metric: 'Words per minute' },
+  { id: 'fillers', emoji: '🚫', title: 'Reduce filler words', description: 'Replace "um" and "like" with confident pauses.', metric: 'Filler words / min' },
+  { id: 'eye', emoji: '👁️', title: 'Improve eye contact', description: 'Maintain natural eye contact with your camera.', metric: 'Eye contact %' },
+  { id: 'body', emoji: '🤲', title: 'Improve body language', description: 'Open hand gestures and upright posture.', metric: 'Posture & gestures' },
+  { id: 'clarity', emoji: '💬', title: 'Improve message clarity', description: 'Clear signposting and structured answers.', metric: 'Clarity score' },
+];
 
 
 export const coachingScript: {type: 'positive' | 'warning';message: string;}[] = [
