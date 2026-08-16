@@ -1,12 +1,12 @@
 import { PracticeContext, PracticeGoal } from '../types';
 
 export const practiceContexts: PracticeContext[] = [
-{ id: 'interview', label: 'Job Interview', emoji: '💼', description: 'Behavioural and competency answers' },
-{ id: 'speaking', label: 'Public Speaking', emoji: '🎤', description: 'Talks, keynotes, and panels' },
-{ id: 'presentation', label: 'Presentation', emoji: '📊', description: 'Decks, reviews, and readouts' },
-{ id: 'sales', label: 'Sales Pitch', emoji: '📈', description: 'Discovery calls and demos' },
-{ id: 'leadership', label: 'Leadership Conversation', emoji: '🧭', description: 'Feedback and difficult chats' },
-{ id: 'freeform', label: 'Free Practice', emoji: '✨', description: 'Warm up with anything at all' }];
+  { id: 'interview', label: 'Job Interview', emoji: '💼', description: 'Behavioural questions and STAR responses' },
+  { id: 'presentation', label: 'Presentation', emoji: '📊', description: 'Decks, slide reviews, and team readouts' },
+  { id: 'sales', label: 'Sales Pitch', emoji: '📈', description: 'Discovery calls, demos, and client proposals' },
+  { id: 'speaking', label: 'Public Speaking', emoji: '🎤', description: 'Keynotes, panels, and stage presentations' },
+  { id: 'freeform', label: 'Custom Practice', emoji: '✨', description: 'Warm up or practice any topic on your mind' },
+];
 
 
 export const practiceGoals: PracticeGoal[] = [

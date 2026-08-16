@@ -37,7 +37,7 @@ export function SetupModal({ onComplete }: SetupModalProps) {
               Step {step} of 2
             </p>
             <h2 className="mt-2 font-display text-2xl font-bold text-white sm:text-3xl">
-              {step === 1 ? 'What are you practising?' : 'Pick your focus for this session'}
+              {step === 1 ? 'What are you preparing for?' : 'Pick your focus for this session'}
             </h2>
           </div>
           <div className="flex gap-1.5" aria-hidden="true">
@@ -46,57 +46,67 @@ export function SetupModal({ onComplete }: SetupModalProps) {
           </div>
         </div>
 
-        {step === 1 ?
-        <div>
+        {step === 1 ? (
+          <div>
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
               {practiceContexts.map((c) => {
-              const active = contextId === c.id;
-              return (
-                <button
-                  key={c.id}
-                  type="button"
-                  onClick={() => setContextId(c.id)}
-                  aria-pressed={active}
-                  className={`rounded-xl border p-4 text-left transition-all duration-300 ${
-                  active ?
-                  'border-primary-500/50 bg-primary-500/10 shadow-lg shadow-primary-500/10' :
-                  'border-slate-800 bg-slate-900/60 hover:border-slate-700 hover:bg-slate-800/50'}`
-                  }>
-                  
-                    <span className="text-xl" aria-hidden="true">
-                      {c.emoji}
-                    </span>
-                    <p className="mt-2.5 font-semibold text-white">{c.label}</p>
-                    <p className="mt-1 text-[13px] leading-snug text-slate-500">{c.description}</p>
-                  </button>);
-
-            })}
+                const active = contextId === c.id;
+                return (
+                  <button
+                    key={c.id}
+                    type="button"
+                    onClick={() => setContextId(c.id)}
+                    aria-pressed={active}
+                    className={`group relative flex flex-col justify-between rounded-2xl border p-4 text-left transition-all duration-200 ${
+                      active
+                        ? 'border-primary-500 bg-primary-500/10 shadow-lg shadow-primary-500/15 ring-1 ring-primary-500/50'
+                        : 'border-slate-800/80 bg-slate-900/60 hover:border-slate-700 hover:bg-slate-800/50'
+                    }`}
+                  >
+                    <div>
+                      <div className="flex items-center justify-between">
+                        <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-800/80 text-xl" aria-hidden="true">
+                          {c.emoji}
+                        </span>
+                        {active && (
+                          <span className="flex h-5 w-5 items-center justify-center rounded-full bg-primary-500 text-[11px] font-bold text-white shadow-sm">
+                            ✓
+                          </span>
+                        )}
+                      </div>
+                      <p className="mt-3 font-display font-semibold text-white">{c.label}</p>
+                      <p className="mt-1 text-[13px] leading-relaxed text-slate-400">{c.description}</p>
+                    </div>
+                  </button>
+                );
+              })}
             </div>
 
             <div className="mt-6">
               <label htmlFor="session-name" className="text-[11px] font-bold uppercase tracking-widest text-slate-500">
-                Session name
+                Session name (optional)
               </label>
               <input
-              id="session-name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder="e.g. Product Manager Loop — Round 2"
-              className="mt-2 w-full rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-white placeholder:text-slate-600 focus:border-primary-500 focus:outline-none focus:ring-0" />
-            
+                id="session-name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="e.g. Product Manager Loop — Round 2"
+                className="mt-2 w-full rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-white placeholder:text-slate-600 focus:border-primary-500 focus:outline-none focus:ring-0"
+              />
             </div>
 
             <div className="mt-7 flex justify-end">
               <button
-              type="button"
-              onClick={() => setStep(2)}
-              className="inline-flex items-center gap-2 rounded-xl bg-primary-600 px-6 py-3 text-sm font-bold text-white shadow-lg shadow-primary-500/20 transition-colors hover:bg-primary-500">
-              
+                type="button"
+                onClick={() => setStep(2)}
+                className="inline-flex items-center gap-2 rounded-xl bg-primary-600 px-6 py-3 text-sm font-bold text-white shadow-lg shadow-primary-500/20 transition-colors hover:bg-primary-500"
+              >
                 Continue
                 <ArrowRightIcon className="h-4 w-4" aria-hidden="true" />
               </button>
             </div>
-          </div> :
+          </div>
+        ) :
 
         <div>
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
