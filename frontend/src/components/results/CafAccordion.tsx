@@ -11,7 +11,7 @@ export function CafAccordion() {
   return (
     <article className="rounded-2xl border border-slate-800/60 bg-slate-900 p-6">
       <p className="text-[11px] font-bold uppercase tracking-widest text-slate-500">
-        Detailed CAF Breakdown
+        Full Communication Breakdown
       </p>
       <h2 className="mt-1.5 font-display text-xl font-bold text-white">Every metric we measured</h2>
 

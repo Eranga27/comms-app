@@ -64,7 +64,7 @@ export function Dashboard() {
               Welcome back, {displayName}
             </h1>
             <p className="mt-2 text-[15px] text-slate-400">
-              {sessions.length} sessions recorded • Powered by CAF Intelligence Engine V2
+              {sessions.length} sessions recorded • Powered by Communication Intelligence Engine V2
             </p>
           </div>
           <Link

@@ -115,11 +115,11 @@ export function useSessionReport(sessionId: string | undefined) {
             { dimension: 'Gestures', value: 65 },
             { dimension: 'Content', value: 66 }
           ],
-          strengths: ['Session telemetry was successfully captured and preserved.', 'Maintained a steady overall pace.'],
+          strengths: ['Speech and delivery captured cleanly.', 'Maintained a steady overall pace.'],
           focusAreas: [
             { area: 'Vocal Clarity', tip: 'Continue practicing with consistent volume and clear pauses.' }
           ],
-          coachSummary: ['Your practice session was completed. The AI system preserved all behavioral telemetry.'],
+          coachSummary: ['Your practice session was completed cleanly. Your coach has analyzed your delivery, body language, and pacing.'],
           cafBreakdown: [
             {
               label: 'Speech Analysis', emoji: '🗣️', metrics: [

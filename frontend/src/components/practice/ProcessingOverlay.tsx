@@ -45,7 +45,7 @@ export function ProcessingOverlay({ onComplete }: ProcessingOverlayProps) {
         </p>
         {takingLonger && (
           <p className="mb-4 text-center text-[12px] text-amber-400 font-medium animate-pulse">
-            Finalizing analysis... preserving your session telemetry.
+            Finalizing analysis... compiling your communication report.
           </p>
         )}
         <ol className="space-y-4">
