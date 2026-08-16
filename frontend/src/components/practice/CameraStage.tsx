@@ -15,6 +15,7 @@ interface CameraStageProps {
   eyeContact: number;
   volumeBars: number[];
   goal: PracticeGoal;
+  prompt?: string;
   telemetry: LiveTelemetry;
   showTelemetry: boolean;
   onToggleTelemetry: () => void;
@@ -45,6 +46,7 @@ export function CameraStage({
   eyeContact,
   volumeBars,
   goal,
+  prompt,
   telemetry,
   showTelemetry,
   onToggleTelemetry,
@@ -53,6 +55,7 @@ export function CameraStage({
   onCancel,
   onRetryMedia,
 }: CameraStageProps) {
+  const [showPromptBanner, setShowPromptBanner] = React.useState(true);
   const recording = state === 'recording';
   const booting = !cameraReady || !engineReady;
 
@@ -147,6 +150,44 @@ export function CameraStage({
             </div>
           )}
         </div>
+
+        {/* Top-center HUD — In-Practice Challenge Prompt */}
+        {prompt && !booting && (
+          <div className="absolute top-4 left-1/2 -translate-x-1/2 z-20 w-[88%] max-w-xs sm:max-w-sm text-center pointer-events-auto">
+            {showPromptBanner ? (
+              <div className="flex items-center justify-between gap-2.5 rounded-2xl border border-primary-500/30 bg-slate-950/85 px-3.5 py-2 shadow-xl backdrop-blur-md">
+                <div className="flex items-center gap-2 overflow-hidden text-left">
+                  <span className="shrink-0 text-sm" aria-hidden="true">🎤</span>
+                  <div className="min-w-0">
+                    <p className="text-[9px] font-bold uppercase tracking-wider text-primary-400">
+                      Your Challenge
+                    </p>
+                    <p className="truncate text-xs font-medium text-slate-100" title={prompt}>
+                      "{prompt}"
+                    </p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setShowPromptBanner(false)}
+                  className="shrink-0 rounded-md bg-slate-800/80 px-2 py-0.5 text-[10px] font-semibold text-slate-300 transition-colors hover:bg-slate-700 hover:text-white"
+                  aria-label="Hide challenge prompt"
+                >
+                  Hide
+                </button>
+              </div>
+            ) : (
+              <button
+                type="button"
+                onClick={() => setShowPromptBanner(true)}
+                className="inline-flex items-center gap-1.5 rounded-full border border-primary-500/30 bg-slate-950/85 px-3 py-1 text-[10px] font-semibold text-primary-300 shadow-md backdrop-blur-md transition-colors hover:bg-primary-500/20"
+              >
+                <span aria-hidden="true">🎤</span>
+                <span>Show challenge</span>
+              </button>
+            )}
+          </div>
+        )}
 
         {/* Top-right HUD — live telemetry chips + toggle */}
         {mode === 'analyst' && !booting && (

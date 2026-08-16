@@ -110,6 +110,7 @@ export function Practice() {
               eyeContact={session.eyeContact}
               volumeBars={session.volumeBars}
               goal={goal}
+              prompt={setup?.prompt}
               telemetry={session.telemetry}
               showTelemetry={showTelemetry}
               onToggleTelemetry={() => setShowTelemetry(!showTelemetry)}
