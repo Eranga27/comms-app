@@ -126,6 +126,7 @@ test.describe('Eloquent One — Golden Path End-to-End Journey', () => {
 
     const continueBtn = page.getByRole('button', { name: /Continue/i });
     await continueBtn.click();
+    await continueBtn.click();
 
     const enterEnvBtn = page.getByRole('button', { name: /Enter Coaching Environment/i });
     await enterEnvBtn.click();

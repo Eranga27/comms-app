@@ -19,6 +19,33 @@ export const practiceGoals: PracticeGoal[] = [
   { id: 'clarity', emoji: '💬', title: 'Improve message clarity', description: 'Clear signposting and structured answers.', metric: 'Clarity score' },
 ];
 
+export const practicePrompts: Record<string, string[]> = {
+  interview: [
+    'Tell me about yourself.',
+    'Why should we hire you?',
+    'Tell me about a difficult problem you solved.',
+    'What is your greatest professional achievement?',
+  ],
+  presentation: [
+    'Explain a complex idea in simple terms.',
+    'Give a two-minute project update.',
+    'Present a new idea to a senior leadership team.',
+  ],
+  sales: [
+    'Pitch your product in 60 seconds.',
+    'Explain why a customer should choose your solution.',
+    'Handle a skeptical customer\'s objection.',
+  ],
+  speaking: [
+    'Give your opinion on a topic you care about.',
+    'Tell a story that taught you an important lesson.',
+    'Convince the audience to change one everyday habit.',
+  ],
+  freeform: [
+    'Speak about any topic you would like to practise.',
+  ],
+};
+
 
 export const coachingScript: {type: 'positive' | 'warning';message: string;}[] = [
 { type: 'positive', message: 'Great eye contact — hold it right there.' },
