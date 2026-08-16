@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ChevronLeftIcon, DownloadIcon } from 'lucide-react';
@@ -28,6 +28,7 @@ export function Results() {
   const { id } = useParams<{ id: string }>();
   const { data, isLoading, error } = useSessionReport(id);
   const { user, setShowAuthModal } = useAuth();
+  const seekVideoRef = useRef<((seconds: number) => void) | null>(null);
 
   // Show guest sign-up prompt after they view their free trial results
   const isGuest = !user;
@@ -60,7 +61,7 @@ export function Results() {
   const { sessionReport } = data;
 
   return (
-    <ReportContext.Provider value={data}>
+    <ReportContext.Provider value={{ ...data, seekVideoRef }}>
       <main className="relative min-h-screen w-full px-5 pb-20 pt-24 sm:px-8">
         <AmbientGlow />
 

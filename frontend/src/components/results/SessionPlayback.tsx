@@ -5,13 +5,14 @@ import { useReport } from '../../contexts/ReportContext';
 import { API_URL } from '../../config';
 
 export function SessionPlayback() {
-  const { sessionReport } = useReport();
+  const { sessionReport, seekVideoRef } = useReport();
   const videoRef = useRef<HTMLVideoElement>(null);
   const [playing, setPlaying] = useState(false);
   const [progress, setProgress] = useState(0);
   const [currentTime, setCurrentTime] = useState('00:00');
   const [hasVideo, setHasVideo] = useState(true);
   const [duration, setDuration] = useState(0);
+  const [seekFlash, setSeekFlash] = useState(false);
 
   const videoSrc = `${API_URL}/sessions_media/${sessionReport.id}.webm`;
 
@@ -51,6 +52,21 @@ export function SessionPlayback() {
     };
   }, [sessionReport?.id]);
 
+  // Register external seek function into context ref
+  useEffect(() => {
+    if (!seekVideoRef) return;
+    seekVideoRef.current = (seconds: number) => {
+      const el = videoRef.current;
+      if (!el || !hasVideo) return;
+      el.currentTime = seconds;
+      void el.play();
+      setPlaying(true);
+      setSeekFlash(true);
+      setTimeout(() => setSeekFlash(false), 800);
+    };
+    return () => { if (seekVideoRef) seekVideoRef.current = null; };
+  }, [seekVideoRef, hasVideo]);
+
   const toggle = () => {
     const el = videoRef.current;
     if (!el || !hasVideo) return;
@@ -87,7 +103,7 @@ export function SessionPlayback() {
       </div>
 
       {/* Video area */}
-      <div className="relative aspect-video bg-slate-950">
+      <div className={`relative aspect-video bg-slate-950 transition-all duration-300 ${seekFlash ? 'ring-2 ring-primary-500/60' : ''}`}>
         <video
           ref={videoRef}
           src={videoSrc}
