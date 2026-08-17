@@ -14,14 +14,18 @@ export interface SessionSetup {
 interface SetupModalProps {
   onComplete: (setup: SessionSetup) => void;
   initialGoalId?: string;
+  initialContextId?: string;
 }
 
-export function SetupModal({ onComplete, initialGoalId }: SetupModalProps) {
+export function SetupModal({ onComplete, initialGoalId, initialContextId }: SetupModalProps) {
   const [step, setStep] = useState<1 | 2 | 3>(1);
-  const [contextId, setContextId] = useState('interview');
+  const [contextId, setContextId] = useState(initialContextId ?? 'interview');
   const [name, setName] = useState('');
   const [goalId, setGoalId] = useState(initialGoalId ?? 'all');
   const [promptIndex, setPromptIndex] = useState(0);
+
+  // Resolved goal object — used in the handoff banner
+  const handoffGoal = initialGoalId ? practiceGoals.find((g) => g.id === initialGoalId) : null;
 
   const availablePrompts = practicePrompts[contextId] || practicePrompts['freeform'] || ['Speak about any topic you would like to practise.'];
   const currentPrompt = availablePrompts[promptIndex % availablePrompts.length];
@@ -46,6 +50,20 @@ export function SetupModal({ onComplete, initialGoalId }: SetupModalProps) {
         aria-label="Session setup"
         className="w-full max-w-3xl rounded-3xl border border-white/10 bg-white/5 p-6 backdrop-blur-xl sm:p-8"
       >
+        {/* Handoff banner — shown when arriving from Results with a pre-set goal */}
+        {handoffGoal && (
+          <div className="mb-6 flex items-center gap-3 rounded-2xl border border-primary-500/20 bg-primary-500/8 px-4 py-3">
+            <span className="shrink-0 text-xl" aria-hidden="true">{handoffGoal.emoji}</span>
+            <div className="min-w-0">
+              <p className="text-[10px] font-bold uppercase tracking-widest text-primary-400">
+                Continuing from your last session
+              </p>
+              <p className="mt-0.5 text-[14px] font-semibold text-white">
+                Let's work on: {handoffGoal.title.replace(/^[^\w]*/, '')}
+              </p>
+            </div>
+          </div>
+        )}
         <div className="mb-7 flex items-center justify-between gap-4">
           <div>
             <p className="text-[11px] font-bold uppercase tracking-widest text-primary-400">

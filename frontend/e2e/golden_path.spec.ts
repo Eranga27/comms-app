@@ -161,4 +161,17 @@ test.describe('Eloquent One — Golden Path End-to-End Journey', () => {
     await expect(page.getByText(/Grade Advanced Communicator/i)).toBeVisible();
     await expect(page.getByText(/Start New Session/i)).toBeVisible();
   });
+
+  test('Results → Practice Handoff: pre-selected goal and handoff banner appear in setup modal', async ({ page }) => {
+    // Navigate directly to Practice with goal + context query params (as Results CTA would link)
+    await page.goto('/v2/practice?goal=pace&context=interview');
+
+    // Setup modal should appear
+    const modal = page.getByRole('dialog', { name: /Session setup/i });
+    await expect(modal).toBeVisible({ timeout: 8000 });
+
+    // Handoff banner should confirm the pre-selected goal
+    await expect(modal.getByText(/Continuing from your last session/i)).toBeVisible();
+    await expect(modal.getByText(/Slow down my pace/i)).toBeVisible();
+  });
 });

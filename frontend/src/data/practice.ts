@@ -32,6 +32,16 @@ export function mapFocusAreaToGoalId(area: string): string | null {
   return null;
 }
 
+/** Reverse-maps a practice context label to its ID. Returns 'freeform' as safe fallback. */
+export function mapContextLabelToId(label: string): string {
+  const lower = label.toLowerCase();
+  if (lower.includes('interview')) return 'interview';
+  if (lower.includes('presentation')) return 'presentation';
+  if (lower.includes('sales')) return 'sales';
+  if (lower.includes('public speaking') || lower.includes('speaking')) return 'speaking';
+  return 'freeform';
+}
+
 export const practicePrompts: Record<string, string[]> = {
   interview: [
     'Tell me about yourself.',

@@ -2,10 +2,10 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRightIcon, ZapIcon } from 'lucide-react';
 import { useReport } from '../../contexts/ReportContext';
-import { practiceGoals, mapFocusAreaToGoalId } from '../../data/practice';
+import { practiceGoals, mapFocusAreaToGoalId, mapContextLabelToId } from '../../data/practice';
 
 export function NextSessionCTA() {
-  const { focusAreas } = useReport();
+  const { focusAreas, sessionReport } = useReport();
 
   // Take the first focus area and attempt a safe goal mapping
   const topFocus = focusAreas?.[0];
@@ -17,7 +17,9 @@ export function NextSessionCTA() {
   const goal = practiceGoals.find((g) => g.id === goalId);
   if (!goal) return null;
 
-  const practiceUrl = `/v2/practice?goal=${goalId}`;
+  // Include the previous session context in the URL for pre-selection
+  const contextId = sessionReport?.context ? mapContextLabelToId(sessionReport.context) : 'freeform';
+  const practiceUrl = `/v2/practice?goal=${goalId}&context=${contextId}`;
 
   return (
     <article
