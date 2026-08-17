@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 import { ChevronLeftIcon } from 'lucide-react';
 import { AmbientGlow } from '../components/common/AmbientGlow';
@@ -19,6 +19,8 @@ const GUEST_SESSION_KEY = 'eloquent_guest_session_used';
 
 export function Practice() {
   const { user, setShowAuthModal } = useAuth();
+  const [searchParams] = useSearchParams();
+  const goalFromUrl = searchParams.get('goal') ?? undefined;
   const [setup, setSetup] = useState<SessionSetup | null>(null);
   const [mode] = useState<FocusMode>('analyst');
   const [showTelemetry, setShowTelemetry] = useState(true);
@@ -146,7 +148,7 @@ export function Practice() {
       <CoachingToast note={session.toast} />
 
       {/* Setup modal — skip for guests who already used their trial */}
-      {!setup && !guestSessionUsed && <SetupModal onComplete={setSetup} />}
+      {!setup && !guestSessionUsed && <SetupModal onComplete={setSetup} initialGoalId={goalFromUrl} />}
 
       {/* Guest prompt overlay */}
       <AnimatePresence>

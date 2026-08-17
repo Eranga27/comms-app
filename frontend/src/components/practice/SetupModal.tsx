@@ -13,13 +13,14 @@ export interface SessionSetup {
 
 interface SetupModalProps {
   onComplete: (setup: SessionSetup) => void;
+  initialGoalId?: string;
 }
 
-export function SetupModal({ onComplete }: SetupModalProps) {
+export function SetupModal({ onComplete, initialGoalId }: SetupModalProps) {
   const [step, setStep] = useState<1 | 2 | 3>(1);
   const [contextId, setContextId] = useState('interview');
   const [name, setName] = useState('');
-  const [goalId, setGoalId] = useState('all');
+  const [goalId, setGoalId] = useState(initialGoalId ?? 'all');
   const [promptIndex, setPromptIndex] = useState(0);
 
   const availablePrompts = practicePrompts[contextId] || practicePrompts['freeform'] || ['Speak about any topic you would like to practise.'];

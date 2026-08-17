@@ -19,6 +19,19 @@ export const practiceGoals: PracticeGoal[] = [
   { id: 'clarity', emoji: '💬', title: 'Improve message clarity', description: 'Clear signposting and structured answers.', metric: 'Clarity score' },
 ];
 
+/** Maps a focus area description string to a practice goal ID using safe keyword matching.
+ *  Returns null when no confident mapping can be made. */
+export function mapFocusAreaToGoalId(area: string): string | null {
+  const lower = area.toLowerCase();
+  if (lower.includes('pace') || lower.includes('wpm') || lower.includes('speed') || lower.includes('fast') || lower.includes('slow')) return 'pace';
+  if (lower.includes('filler') || lower.includes('um') || lower.includes('uh') || lower.includes('like') || lower.includes('you know')) return 'fillers';
+  if (lower.includes('eye contact') || lower.includes('eye')) return 'eye';
+  if (lower.includes('posture') || lower.includes('gesture') || lower.includes('weight shift') || lower.includes('body')) return 'body';
+  if (lower.includes('confidence') || lower.includes('nervous') || lower.includes('trail') || lower.includes('strong')) return 'confidence';
+  if (lower.includes('structure') || lower.includes('clarity') || lower.includes('organis') || lower.includes('message') || lower.includes('ending')) return 'clarity';
+  return null;
+}
+
 export const practicePrompts: Record<string, string[]> = {
   interview: [
     'Tell me about yourself.',

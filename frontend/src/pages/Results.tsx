@@ -11,6 +11,7 @@ import { ScoreHero } from '../components/results/ScoreHero';
 import { SessionPlayback } from '../components/results/SessionPlayback';
 import { StrengthsFocus } from '../components/results/StrengthsFocus';
 import { TranscriptView } from '../components/results/TranscriptView';
+import { NextSessionCTA } from '../components/results/NextSessionCTA';
 import { ReportContext } from '../contexts/ReportContext';
 import { useSessionReport } from '../hooks/useSessionReport';
 import { useAuth } from '../contexts/AuthContext';
@@ -151,6 +152,11 @@ export function Results() {
           {/* DETAILED BREAKDOWN ACCORDION */}
           <motion.div {...section}>
             <CafAccordion />
+          </motion.div>
+
+          {/* NEXT SESSION COACHING CTA */}
+          <motion.div {...section}>
+            <NextSessionCTA />
           </motion.div>
 
           {/* Action buttons */}
